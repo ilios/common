@@ -1,5 +1,5 @@
 import Component from '@ember/component';
-import { run } from '@ember/runloop';
+import { next } from '@ember/runloop';
 import { computed } from '@ember/object';
 import { isEmpty } from '@ember/utils';
 import moment from 'moment';
@@ -11,8 +11,11 @@ export default Component.extend({
   date: null,
   calendarEvents: null,
   didInsertElement(){
-    run.next(() => {
-      this.$(".el-calendar .week").scrollTop(500);
+    next(() => {
+      const el = this.$(".el-calendar .week");
+      if (el) {
+        el.scrollTop(500);
+      }
     });
   },
   singleDayEvents: computed('calendarEvents.[]', function(){
