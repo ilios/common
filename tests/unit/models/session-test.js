@@ -282,7 +282,7 @@ module('Unit | Model | Session', function(hooks) {
   });
 
   test('totalSumOfferingsDuration', async function(assert){
-    assert.expect(2);
+    assert.expect(3);
     const subject = run(() => this.owner.lookup('service:store').createRecord('session'));
     const store = this.owner.lookup('service:store');
     await run( async () => {
@@ -297,10 +297,20 @@ module('Unit | Model | Session', function(hooks) {
       const total = await subject.get('totalSumOfferingsDuration');
       assert.equal(total, 24.50);
     });
+
+    await run( async () => {
+      const ilm = store.createRecord('ilmSession', { hours: 7.00 });
+      const allDayOffering = store.createRecord('offering', {startDate: moment('2017-01-01') , endDate: moment('2017-01-02') });
+      const halfAnHourOffering = store.createRecord('offering', {startDate: moment('2017-01-01 09:30:00'), endDate: moment('2017-01-01 10:00:00') });
+      subject.get('offerings').pushObjects([ allDayOffering, halfAnHourOffering ]);
+      subject.set('ilmSession', ilm);
+      const total = await subject.get('totalSumOfferingsDuration');
+      assert.equal(total, 31.50);
+    });
   });
 
   test('maxSingleOfferingDuration', async function(assert){
-    assert.expect(2);
+    assert.expect(3);
     const subject = run(() => this.owner.lookup('service:store').createRecord('session'));
     const store = this.owner.lookup('service:store');
     await run( async () => {
@@ -314,6 +324,16 @@ module('Unit | Model | Session', function(hooks) {
       subject.get('offerings').pushObjects([ allDayOffering, halfAnHourOffering ]);
       const max = await subject.get('maxSingleOfferingDuration');
       assert.equal(max, 24.00);
+    });
+
+    await run( async () => {
+      const ilm = store.createRecord('ilmSession', { hours: 15.00 });
+      const allDayOffering = store.createRecord('offering', {startDate: moment('2017-01-01') , endDate: moment('2017-01-02') });
+      const halfAnHourOffering = store.createRecord('offering', {startDate: moment('2017-01-01 09:30:00'), endDate: moment('2017-01-01 10:00:00') });
+      subject.get('offerings').pushObjects([ allDayOffering, halfAnHourOffering ]);
+      subject.set('ilmSession', ilm);
+      const max = await subject.get('maxSingleOfferingDuration');
+      assert.equal(max, 39.00);
     });
   });
 
