@@ -79,46 +79,56 @@ export default Model.extend(PublishableModel, CategorizableModel, SortableByPosi
   }),
 
   /**
-   * The maximum duration in hours (incl. fractions) of any session offerings.
+   * The maximum duration in hours (incl. fractions) of any session offerings, plus any ILM hours, if applicable.
    * @property maxSingleOfferingDuration
    * @type {Ember.computed}
    */
-  maxSingleOfferingDuration: computed('offerings.@each.startDate', 'offerings.@each.endDate', async function () {
+  maxSingleOfferingDuration: computed('ilmSession.hours', 'offerings.@each.startDate', 'offerings.@each.endDate', async function () {
     const offerings = await this.get('offerings');
-    if (isEmpty(offerings)) {
-      return 0;
+    const ilm = await this.get('ilmSession');
+    let duration = 0;
+    if (! isEmpty(ilm)) {
+      duration = ilm.get('hours');
     }
-    const sortedOfferings = offerings.toArray().sort(function (a, b) {
-      const diffA = moment(a.get('endDate')).diff(moment(a.get('startDate')), 'minutes');
-      const diffB = moment(b.get('endDate')).diff(moment(b.get('startDate')), 'minutes');
-      if (diffA > diffB) {
-        return -1;
-      } else if (diffA < diffB) {
-        return 1;
-      }
-      return 0;
-    });
 
-    const offering = sortedOfferings[0];
-    const duration = moment(offering.get('endDate')).diff(moment(offering.get('startDate')), 'hours', true);
+    if (! isEmpty(offerings)) {
+      const sortedOfferings = offerings.toArray().sort(function (a, b) {
+        const diffA = moment(a.get('endDate')).diff(moment(a.get('startDate')), 'minutes');
+        const diffB = moment(b.get('endDate')).diff(moment(b.get('startDate')), 'minutes');
+        if (diffA > diffB) {
+          return -1;
+        } else if (diffA < diffB) {
+          return 1;
+        }
+        return 0;
+      });
+
+      const offering = sortedOfferings[0];
+      duration = duration + moment(offering.get('endDate')).diff(moment(offering.get('startDate')), 'hours', true);
+    }
 
     return duration.toFixed(2);
   }),
 
   /**
-   * The total duration in hours (incl. fractions) of all session offerings.
+   * The total duration in hours (incl. fractions) of all session offerings, plus any ILM hours, if applicable.
    * @property totalSumOfferingsDuration
    * @type {Ember.computed}
    */
-  totalSumOfferingsDuration: computed('offerings.@each.startDate', 'offerings.@each.endDate', async function () {
+  totalSumOfferingsDuration: computed('ilmSession.hours', 'offerings.@each.startDate', 'offerings.@each.endDate', async function () {
     const offerings = await this.get('offerings');
-    if (isEmpty(offerings)) {
-      return 0;
+    const ilm = await this.get('ilmSession');
+    let duration = 0;
+    if (! isEmpty(ilm)) {
+      duration = ilm.get('hours');
+    }
+    if (! isEmpty(offerings)) {
+      duration = duration + offerings.reduce((total, offering) => {
+        return total + moment(offering.get('endDate')).diff(moment(offering.get('startDate')), 'hours', true);
+      }, 0);
     }
 
-    return offerings.reduce((total, offering) => {
-      return total + moment(offering.get('endDate')).diff(moment(offering.get('startDate')), 'hours', true);
-    }, 0).toFixed(2);
+    return duration.toFixed(2);
   }),
 
   /**
