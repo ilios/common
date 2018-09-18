@@ -46,7 +46,7 @@
     "liquid-fire": "^0.29.0"
   },
   "devDependencies": {
-    "@ember/optional-features": "^0.6.3",
+    "@ember/optional-features": "^0.7.0",
     "broccoli-asset-rev": "^3.0.0",
     "dotenv": "^6.0.0",
     "ember-ajax": "^3.1.0",
