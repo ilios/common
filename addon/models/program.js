@@ -1,12 +1,11 @@
 import { computed } from '@ember/object';
 import RSVP from 'rsvp';
 import DS from 'ember-data';
-import PublishableModel from 'ilios-common/mixins/publishable-model';
 
 const { attr, belongsTo, hasMany, Model } = DS;
 const { all } = RSVP;
 
-export default Model.extend(PublishableModel,{
+export default Model.extend({
   title: attr('string'),
   shortTitle: attr('string'),
   duration: attr('number', { defaultValue: 1 }),
