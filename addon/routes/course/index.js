@@ -1,12 +1,22 @@
-import Mixin from '@ember/object/mixin';
+import Route from '@ember/routing/route';
+import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 import { get } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { all } from 'rsvp';
 
-export default Mixin.create({
+export default Route.extend(AuthenticatedRouteMixin, {
   permissionChecker: service(),
   preserveScroll: service(),
   store: service(),
+
+  queryParams: {
+    sortSessionsBy: {
+      replace: true
+    },
+    filterSessionsBy: {
+      replace: true
+    },
+  },
 
   canCreateSession: false,
   canUpdateCourse: false,
@@ -15,6 +25,7 @@ export default Mixin.create({
     const isFromSessionIndex = get(transition, 'from.name') === 'session.index';
     this.preserveScroll.set('shouldScrollDown', isFromSessionIndex);
   },
+
 
   /**
    * Prefetch related data to limit network requests
@@ -52,27 +63,11 @@ export default Mixin.create({
 
     return all(promises);
   },
+
   setupController(controller, model) {
     this._super(controller, model);
     controller.set('canUpdateCourse', this.get('canUpdateCourse'));
     controller.set('canCreateSession', this.get('canCreateSession'));
-  },
-  async fillPermissions(course) {
-    const permissionChecker = this.get('permissionChecker');
-    const canUpdateCourse = await permissionChecker.canUpdateCourse(course);
-    const canCreateSession = await permissionChecker.canCreateSession(course);
-
-    this.set('canUpdateCourse', canUpdateCourse);
-    this.set('canCreateSession', canCreateSession);
-  },
-
-  queryParams: {
-    sortSessionsBy: {
-      replace: true
-    },
-    filterSessionsBy: {
-      replace: true
-    },
   },
 
   actions: {
@@ -82,5 +77,14 @@ export default Mixin.create({
         this.preserveScroll.set('yPos', null);
       }
     }
+  },
+
+  async fillPermissions(course) {
+    const permissionChecker = this.get('permissionChecker');
+    const canUpdateCourse = await permissionChecker.canUpdateCourse(course);
+    const canCreateSession = await permissionChecker.canCreateSession(course);
+
+    this.set('canUpdateCourse', canUpdateCourse);
+    this.set('canCreateSession', canCreateSession);
   }
 });

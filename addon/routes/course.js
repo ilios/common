@@ -1,7 +1,8 @@
-import Mixin from '@ember/object/mixin';
+import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
+import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
-export default Mixin.create({
+export default Route.extend(AuthenticatedRouteMixin, {
   permissionChecker: service(),
   titleToken: 'general.coursesAndSessions',
   editable: false,
