@@ -1,6 +1,6 @@
-import Mixin from '@ember/object/mixin';
+import Controller from '@ember/controller';
 
-export default Mixin.create({
+export default Controller.extend({
   actions: {
     returnToList(){
       this.transitionToRoute('course.index', this.model);
