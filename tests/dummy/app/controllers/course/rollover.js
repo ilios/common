@@ -1,4 +1,1 @@
-import Controller from '@ember/controller';
-import RolloverController from 'ilios-common/mixins/course/rollover-controller';
-
-export default Controller.extend(RolloverController);
+export { default } from 'ilios-common/controllers/course/rollover';

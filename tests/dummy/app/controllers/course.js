@@ -1,4 +1,1 @@
-import Controller from '@ember/controller';
-import CourseController from 'ilios-common/mixins/course-controller';
-
-export default Controller.extend(CourseController);
+export { default } from 'ilios-common/controllers/course';
