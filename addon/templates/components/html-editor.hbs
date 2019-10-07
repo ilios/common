@@ -1,1 +1,13 @@
-<FroalaEditor @content={{content}} @update={{update}} @options={{options}} />
+<div>
+  <button class="ql-bold"></button>
+  <button class="ql-italic"></button>
+  <button class="ql-list" value="ordered"></button>
+  <button class="ql-list" value="bullet"></button>
+  <button class="ql-script" value="sub"></button>
+  <button class="ql-script" value="super"></button>
+  <button class="ql-link" value="super"></button>
+</div>
+<div>
+  {{! template-lint-disable no-triple-curlies }}
+  {{{@content}}}
+</div>

@@ -1,69 +1,46 @@
-import $ from 'jquery';
-import { inject as service } from '@ember/service';
 import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { dom } from '@fortawesome/fontawesome-svg-core';
-import { next } from '@ember/runloop';
+import Quill from 'quill';
+import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
 import layout from '../templates/components/html-editor';
 
-const defaultButtons = [
-  'bold',
-  'italic',
-  'subscript',
-  'superscript',
-  'formatOL',
-  'formatUL',
-  'insertLink',
-  'html'
-];
 export default Component.extend({
-  intl: service(),
   layout,
-  content: '',
+  classNames: ['html-editor'],
+  update(){},
 
-  options: computed('intl.locale', function(){
-    const intl = this.get('intl');
-    const language = intl.get('locale');
+  didInsertElement() {
+    const formatOptions = [
+      'bold',
+      'italic',
+      'link',
+      'script',
+      'list',
+    ];
 
-    return {
-      key   : '3A9A5C4A3gC3E3C3E3B7A4A2F4B2D2zHMDUGENKACTMXQL==',
-      theme : 'gray',
-      language,
-      toolbarInline: false,
-      placeholderText: '',
-      allowHTML: true,
-      saveInterval: false,
-      pastePlain: true,
-      spellcheck: true,
-      toolbarButtons: defaultButtons,
-      toolbarButtonsMD: defaultButtons,
-      toolbarButtonsSM: defaultButtons,
-      toolbarButtonsXS: defaultButtons,
-      quickInsertButtons: false,
-      pluginsEnabled: ['lists', 'code_view', 'link'],
-      iconsTemplate: 'font_awesome_5',
-      listAdvancedTypes: false,
-      shortcutsEnabled: ['bold', 'italic', 'strikeThrough', 'undo', 'redo', 'createLink'],
+    const options = {
+      modules: {
+        toolbar: this.element.querySelector('div:nth-of-type(1)'),
+        history: true,
+        clipboard: true,
+      },
+      formats: formatOptions,
+      theme: 'snow'
     };
-  }),
+    const node = this.element.querySelector('div:nth-of-type(2)');
+    this.quill = new Quill(node, options);
+    this.handler = (delta, existing) => {
+      // quill uses an internal Delta format https://github.com/quilljs/delta/
+      // this requires that we compose together the changes ourselves
+      const changes = existing.compose(delta);
+      // we then use a special converter to go back into the HTML that our app expects
+      const converter = new QuillDeltaToHtmlConverter(changes.ops, {});
+      const html = converter.convert();
+      this.update(html);
+    };
 
-  /**
-   * Disable Froala's built in beacon tracking
-   * Has to be done on the global jQuery plugin object
-   */
-  init() {
-    this._super(...arguments);
-    $.FE.DT = true;
+    this.quill.on('text-change', this.handler);
   },
-  /**
-   * Convert `<i>` tags from froala into SVG icons
-   * Uses: https://fontawesome.com/how-to-use/with-the-api/methods/dom-i2svg
-   */
-  didRender() {
-    next(() => {
-      if (this.element) {
-        dom.i2svg({node: this.element});
-      }
-    });
+  willDestroyElement() {
+    this.quill.off('text-change', this.handler);
   },
 });

@@ -1,0 +1,15 @@
+.html-editor {
+  background-color: $white;
+  min-height: 20rem;
+  //quill toolbar buttons need at least this much space or they collapse to the next line
+  min-width: 220px;
+  width: 100%;
+
+  .ql-toolbar {
+    height: 2.5rem;
+  }
+
+  .ql-container {
+    min-height: 17.5rem;
+  }
+}

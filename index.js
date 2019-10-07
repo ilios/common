@@ -8,8 +8,9 @@ const WriteFile = require('broccoli-file-creator');
 module.exports = {
   name: require('./package').name,
 
-  included: function() {
+  included: function(app) {
     this._super.included.apply(this, arguments);
+    app.import('node_modules/quill/dist/quill.snow.css');
   },
 
   contentFor(type, config) {

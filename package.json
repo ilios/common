@@ -67,6 +67,8 @@
     "ember-test-selectors": "^2.0.0",
     "ember-truth-helpers": "^2.0.0",
     "liquid-fire": "^0.30.0",
+    "quill": "^1.3.7",
+    "quill-delta-to-html": "^0.10.13",
     "scroll-into-view": "^1.9.3",
     "striptags": "^3.1.1"
   },
@@ -90,7 +92,6 @@
     "ember-cli-sri": "^2.1.1",
     "ember-cli-uglify": "^3.0.0",
     "ember-export-application-global": "^2.0.0",
-    "ember-froala-editor": "^2.9.0",
     "ember-inflector": "^3.0.0",
     "ember-load-initializers": "^2.0.0",
     "ember-maybe-import-regenerator": "^0.1.6",
