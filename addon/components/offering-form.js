@@ -14,6 +14,7 @@ import { validator, buildValidations } from 'ember-cp-validations';
 import ValidationErrorDisplay from 'ilios-common/mixins/validation-error-display';
 import { task, timeout } from 'ember-concurrency';
 import layout from '../templates/components/offering-form';
+import scrollIntoView from "scroll-into-view";
 
 const DEBOUNCE_DELAY = 600;
 
@@ -212,6 +213,13 @@ export default Component.extend(ValidationErrorDisplay, Validations, {
       this.get('loadAttrsFromOffering').perform(offering);
     } else {
       this.loadDefaultAttrs();
+    }
+  },
+  didInsertElement() {
+    this._super(...arguments);
+    const offering = this.get('offering');
+    if (! isPresent(offering)) {
+      scrollIntoView(this.element.querySelector('.offering-form .buttons'));
     }
   },
   actions: {
