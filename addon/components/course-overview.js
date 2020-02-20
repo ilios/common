@@ -61,7 +61,7 @@ export default class CourseOverview extends Component {
     } else if (length > maxLength) {
       errors.push(this.intl.t('errors.tooLong', {
         description,
-        min: maxLength
+        max: maxLength
       }));
     }
     return errors;
