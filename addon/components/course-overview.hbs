@@ -65,10 +65,10 @@
             <Input
               type="text"
               @value={{this.externalId}}
-              @key-press={{fn this.addErrorDisplayFor "externalId"}}
+              @key-down={{fn this.addErrorDisplayFor "externalId"}}
               disabled={{isSaving}}
             />
-            {{#each (await (compute (fn this.getErrorsFor) "externalId")) as |message|}}
+            {{#each this.externalIdValidationErrors as |message|}}
               <span class="validation-error-message">
                 {{message}}
               </span>
@@ -127,10 +127,9 @@
             <PikadayInput
               @value={{this.startDate}}
               @format="L"
-              @onSelection={{fn (set this.startDate)}}
-              @focusOut={{fn this.addErrorDisplayFor "startDate"}}
+              @onSelection={{queue (fn this.addErrorDisplayFor "startDate") (fn (set this.startDate))}}
             />
-            {{#each (await (compute (fn this.getErrorsFor) "startDate")) as |message|}}
+            {{#each this.startDateValidationErrors as |message|}}
               <span class="validation-error-message">
                 {{message}}
               </span>
@@ -153,10 +152,9 @@
             <PikadayInput
               @value={{this.endDate}}
               @format="L"
-              @onSelection={{fn (set this.endDate)}}
-              @focusOut={{fn this.addErrorDisplayFor "endDate"}}
+              @onSelection={{queue (fn this.addErrorDisplayFor "endDate") (fn (set this.endDate))}}
             />
-            {{#each (await (compute (fn this.getErrorsFor) "endDate")) as |message|}}
+            {{#each this.endDateValidationErrors as |message|}}
               <span class="validation-error-message">
                 {{message}}
               </span>

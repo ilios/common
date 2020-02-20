@@ -4,9 +4,10 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import scrollTo from 'ilios-common/utils/scroll-to';
 import { restartableTask } from 'ember-concurrency-decorators';
-import { validatable, Length, BeforeDate, AfterDate } from 'ilios-common/decorators/validation';
+import moment from 'moment';
+import { validatableComponent } from 'ilios-common/decorators/validation/validatable-component';
 
-@validatable
+@validatableComponent
 export default class CourseOverview extends Component {
   @service currentUser;
   @service intl;
@@ -16,9 +17,9 @@ export default class CourseOverview extends Component {
 
   universalLocator = 'ILIOS';
 
-  @Length(2, 255) @tracked externalId = null;
-  @BeforeDate('endDate') @tracked startDate = null;
-  @AfterDate('startDate') @tracked endDate = null;
+  @tracked externalId = null;
+  @tracked startDate = null;
+  @tracked endDate = null;
   @tracked level = null;
   @tracked levelOptions = null;
   @tracked clerkshipTypeId = null;
@@ -34,6 +35,94 @@ export default class CourseOverview extends Component {
   constructor() {
     super(...arguments);
     this.levelOptions = [1, 2, 3, 4, 5];
+  }
+
+  get externalIdValidationErrors() {
+    const minLength = 2;
+    const maxLength = 255;
+    const errors = [];
+    const value = this.externalId;
+
+    if (! this.hasErrorDisplayFor("externalId")) {
+      return errors;
+    }
+
+    const length = String(value).trim().length;
+    if (! length) {
+      return errors;
+    }
+
+    const description = this.intl.t('errors.description');
+    if (length < minLength) {
+      errors.push(this.intl.t('errors.tooShort', {
+        description,
+        min: minLength
+      }));
+    } else if (length > maxLength) {
+      errors.push(this.intl.t('errors.tooLong', {
+        description,
+        min: maxLength
+      }));
+    }
+    return errors;
+  }
+
+  get startDateValidationErrors() {
+    const errors = [];
+    const description = this.intl.t('errors.description');
+    const value = this.startDate;
+    const dependentValue = this.endDate;
+
+    if (! this.hasErrorDisplayFor("startDate")) {
+      return errors;
+    }
+
+    if (! (value instanceof Date)) {
+      errors.push(this.intl.t('errors.date', { description }));
+      return errors;
+    }
+
+    if (! (dependentValue instanceof Date)) {
+      throw `${dependentValue} must be a Date.`;
+    }
+
+    if (value > dependentValue) {
+      errors.push(this.intl.t('errors.before', {
+        description,
+        before: moment(dependentValue).format('LL')
+      }));
+    }
+
+    return errors;
+  }
+
+  get endDateValidationErrors() {
+    const errors = [];
+    const description = this.intl.t('errors.description');
+    const value = this.endDate;
+    const dependentValue = this.startDate;
+
+    if (! this.hasErrorDisplayFor("endDate")) {
+      return errors;
+    }
+
+    if (! (value instanceof Date)) {
+      errors.push(this.intl.t('errors.date', { description }));
+      return errors;
+    }
+
+    if (! (dependentValue instanceof Date)) {
+      throw `${this.startDate} must be a Date.`;
+    }
+
+    if (value < dependentValue) {
+      errors.push(this.intl.t('errors.after', {
+        description,
+        after: moment(dependentValue).format('LL')
+      }));
+    }
+
+    return errors;
   }
 
   @restartableTask
@@ -115,8 +204,7 @@ export default class CourseOverview extends Component {
   @restartableTask
   *changeStartDate() {
     this.addErrorDisplayFor('startDate');
-    const isValid = yield this.isValid('startDate');
-    if (!isValid) {
+    if (! this.isValid()) {
       return false;
     }
     this.removeErrorDisplayFor('startDate');
@@ -133,8 +221,7 @@ export default class CourseOverview extends Component {
   @restartableTask
   *changeEndDate() {
     this.addErrorDisplayFor('endDate');
-    const isValid = yield this.isValid('endDate');
-    if (!isValid) {
+    if (! this.isValid()) {
       return false;
     }
     this.removeErrorDisplayFor('endDate');
@@ -151,8 +238,7 @@ export default class CourseOverview extends Component {
   @restartableTask
   *changeExternalId() {
     this.addErrorDisplayFor('externalId');
-    const isValid = yield this.isValid('externalId');
-    if (!isValid) {
+    if (! this.isValid()) {
       return false;
     }
     this.removeErrorDisplayFor('externalId');
