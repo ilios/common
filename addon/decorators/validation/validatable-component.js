@@ -4,25 +4,17 @@ import { action } from '@ember/object';
 export function validatableComponent(component) {
   return class extends component {
     @tracked _registry = [];
-    @tracked _showAllErrors = false;
 
     @action
     clearErrorDisplay() {
       this._registry = [];
-      this._showAllErrors = false;
     }
 
     @action
     removeErrorDisplayFor(field) {
       if (this.hasErrorDisplayFor(field)) {
-        this._showAllErrors = false;
         this._registry = this._registry.filter(f => f !== field);
       }
-    }
-
-    @action
-    addErrorDisplayForAllFields() {
-      this._showAllErrors = true;
     }
 
     @action
@@ -62,7 +54,7 @@ export function validatableComponent(component) {
 
     @action
     getErrorsFor(field) {
-      if (this._showAllErrors || this.hasErrorDisplayFor(field)) {
+      if (this.hasErrorDisplayFor(field)) {
         const errors = this.validate();
         if (field in errors) {
           return errors[field];
