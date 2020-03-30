@@ -57,7 +57,7 @@
     "ember-drag-drop": "^0.7.0",
     "ember-event-helpers": "^0.1.0",
     "ember-feature-flags": "^6.0.0",
-    "ember-fetch": "^6.7.2",
+    "ember-fetch": "^8.0.0",
     "ember-file-upload": "^3.0.2",
     "ember-in-element-polyfill": "^0.3.0",
     "ember-intl": "^4.0.0",
