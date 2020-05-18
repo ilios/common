@@ -1,5 +1,6 @@
 import { registerDecorator } from "class-validator";
 import { getOwner } from '@ember/application';
+import moment from 'moment';
 
 export function IsDate(validationOptions) {
   return function (object, propertyName) {
@@ -10,7 +11,7 @@ export function IsDate(validationOptions) {
       options: validationOptions,
       validator: {
         validate(value) {
-          return ! isNaN(Date.parse(value));
+          return moment(value).isValid();
         },
         defaultMessage({ object: target }) {
           const owner = getOwner(target);
