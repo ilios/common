@@ -6,6 +6,7 @@ import { HtmlNotBlank }  from './validation/html-not-blank';
 import { Gte } from './validation/gte';
 import { Gt } from './validation/gt';
 import { Lte } from './validation/lte';
+import { IsDate } from './validation/is-date';
 import { IsInt } from './validation/is-int';
 import { IsTrue } from './validation/is-true';
 import { validatable } from './validation/validatable';
@@ -16,6 +17,7 @@ export {
   Gt,
   Gte,
   Lte,
+  IsDate,
   IsInt,
   IsTrue,
   AfterDate,
