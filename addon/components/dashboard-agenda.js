@@ -33,9 +33,7 @@ export default class DashboardAgendaComponent extends Component {
     const hashes = [];
     const uniques = [];
     preWork.forEach(event => {
-      const hash = moment(event.startDate).format() +
-        moment(event.endDate).format() +
-        event.name;
+      const hash = this.hashEvent(event);
       if (! hashes.includes(hash)) {
         hashes.push(hash);
         uniques.pushObject(event);
@@ -45,8 +43,36 @@ export default class DashboardAgendaComponent extends Component {
   }
 
   get nonIlmPreWorkEvents() {
+    const preworkEventHashes = this.ilmPreWorkEvents.map(ev => {
+      return this.hashEvent(ev);
+    });
     return this.weeksEvents.filter(ev => {
+      // ACHTUNG MINEN!
+      // do a reverse lookup here against pre-work events.
+      // if the current event has pre-requisites, and if any of
+      // those pre-requisites has been identified as pre-work event
+      // then do not list this event again, as it will be displayed
+      // as post-requisite elsewhere in this agenda view already.
+      // [ST 2020/08/04]
+      if (ev.prerequisites.length) {
+        const prerequisiteHashes = ev.prerequisites.map(ev => {
+          return this.hashEvent(ev);
+        });
+        const hasPreWorkEvents = prerequisiteHashes.some(hash => {
+          return preworkEventHashes.includes(hash);
+        });
+
+        if (hasPreWorkEvents) {
+          return false;
+        }
+      }
       return ev.postrequisites.length === 0 || !ev.ilmSession;
     });
+  }
+
+  hashEvent(event) {
+    return  moment(event.startDate).format() +
+      moment(event.endDate).format() +
+      event.name;
   }
 }
