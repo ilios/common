@@ -49,12 +49,12 @@ export default class DashboardAgendaComponent extends Component {
     return this.weeksEvents.filter(ev => {
       // ACHTUNG MINEN!
       // do a reverse lookup here against pre-work events.
-      // if the current event has pre-requisites, and if any of
-      // those pre-requisites has been identified as pre-work event
+      // if the current event is derived from an ILM and it has pre-requisites,
+      // and if any of those pre-requisites has been identified as pre-work event
       // then do not list this event again, as it will be displayed
       // as post-requisite elsewhere in this agenda view already.
       // [ST 2020/08/04]
-      if (ev.prerequisites.length) {
+      if (ev.ilmSession && ev.prerequisites.length) {
         const prerequisiteHashes = ev.prerequisites.map(ev => {
           return this.hashEvent(ev);
         });
