@@ -95,6 +95,19 @@ module('Integration | Component | dashboard agenda', function (hooks) {
         isScheduled: true,
         isBlanked: false,
       },
+      {
+        name: 'prework to an ILM',
+        startDate: today.format(),
+        endDate: tomorrow.format(),
+        location: "room 123",
+        ilmSession: true,
+        slug: 'whatever',
+        postrequisiteSlug: 'ilmpostreq',
+        postrequisiteName: 'ILM postreq',
+        isPublished: true,
+        isScheduled: false,
+        isBlanked: false,
+      },
     ];
 
     mockEvents = [
@@ -196,6 +209,23 @@ module('Integration | Component | dashboard agenda', function (hooks) {
         isScheduled: false,
         isBlanked: false,
       },
+      {
+        name: 'Ilm',
+        startDate: today.format(),
+        location: 123,
+        lastModified: today.format(),
+        attendanceRequired: true,
+        equipmentRequired: true,
+        attireRequired: true,
+        postrequisites: [],
+        prerequisites: [
+          preWork[6],
+        ],
+        isPublished: true,
+        isScheduled: false,
+        isBlanked: false,
+        ilmSession: 12345,
+      },
     ];
 
     preWork[0].postrequisites = [mockEvents[2]];
@@ -216,7 +246,7 @@ module('Integration | Component | dashboard agenda', function (hooks) {
   });
 
   test('it renders with events', async function (assert) {
-    assert.expect(17);
+    assert.expect(18);
     this.owner.register('service:user-events', userEventsMock);
     this.userEvents = this.owner.lookup('service:user-events');
 
@@ -231,7 +261,7 @@ module('Integration | Component | dashboard agenda', function (hooks) {
       assert.dom(tds[1]).hasText(mockEvents[i].name);
     }
     const preworkSelector = '[data-test-ilios-calendar-pre-work-event]';
-    assert.equal(this.element.querySelectorAll(preworkSelector).length, 2);
+    assert.equal(this.element.querySelectorAll(preworkSelector).length, 3);
     assert.dom(this.element.querySelector(`${preworkSelector}:nth-of-type(1)`))
       .hasText(
         'prework 2 Due Before first (' + moment(mockEvents[0].startDate).format('M/D/YYYY') + ')'
@@ -239,6 +269,10 @@ module('Integration | Component | dashboard agenda', function (hooks) {
     assert.dom(this.element.querySelector(`${preworkSelector}:nth-of-type(2)`))
       .hasText(
         'prework 1 Due Before third (' + moment(mockEvents[2].startDate).format('M/D/YYYY') + ')'
+      );
+    assert.dom(this.element.querySelector(`${preworkSelector}:nth-of-type(3)`))
+      .hasText(
+        'prework to an ILM Due Before ILM postreq (' + moment(mockEvents[3].startDate).format('M/D/YYYY') + ')'
       );
   });
 
