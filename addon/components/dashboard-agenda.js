@@ -21,6 +21,9 @@ export default class DashboardAgendaComponent extends Component {
   }
 
   get ilmPreWorkEvents() {
+    if (! this.weeksEvents) {
+      return [];
+    }
     const preWork = this.weeksEvents.reduce((arr, ev) => {
       if (!ev.isBlanked && ev.isPublished && !ev.isScheduled) {
         arr.pushObjects(ev.prerequisites);
