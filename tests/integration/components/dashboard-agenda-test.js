@@ -1,4 +1,3 @@
-import { resolve } from 'rsvp';
 import Service from '@ember/service';
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
@@ -204,13 +203,13 @@ module('Integration | Component | dashboard agenda', function (hooks) {
     preWork[2].postrequisites = [mockEvents[0]];
 
     userEventsMock = Service.extend({
-      getEvents() {
-        return new resolve(mockEvents);
+      async getEvents() {
+        return mockEvents;
       },
     });
     blankEventsMock = Service.extend({
-      getEvents() {
-        return new resolve([]);
+      async getEvents() {
+        return [];
       },
     });
 
