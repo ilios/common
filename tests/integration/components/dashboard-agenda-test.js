@@ -128,6 +128,7 @@ module('Integration | Component | dashboard agenda', function (hooks) {
         equipmentRequired: false,
         attireRequired: false,
         postrequisites: [],
+        prerequisites: [],
         isPublished: true,
         isScheduled: false,
         isBlanked: false,
