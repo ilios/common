@@ -321,8 +321,7 @@ export default Service.extend({
       return false;
     }
 
-    const program = await curriculumInventoryReport.get('program');
-    const school = await program.get('school');
+    const school = await curriculumInventoryReport.get('school');
     if (await this.canChangeInSchool(school, 'CAN_UPDATE_ALL_CURRICULUM_INVENTORY_REPORTS')) {
       return true;
     }
