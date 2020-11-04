@@ -12,16 +12,6 @@
     </li>
     <li>
       <button
-        class={{if (eq @show "agenda") "active"}}
-        type="button"
-        data-test-activities
-        {{on "click" (fn @change "agenda")}}
-      >
-        {{t "general.activities"}}
-      </button>
-    </li>
-    <li>
-      <button
         class={{if (eq @show "materials") "active"}}
         type="button"
         data-test-materials
