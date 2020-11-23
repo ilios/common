@@ -515,46 +515,6 @@ module('Acceptance | Dashboard Calendar', function(hooks) {
     assert.equal(page.weeklyCalendar.events.length, 1);
   });
 
-  test('agenda show next seven days of events', async function(assert) {
-    const today = moment().hour(0).minute(2);
-    this.server.create('userevent', {
-      user: parseInt(this.user.id, 10),
-      startDate: today.format(),
-      endDate: today.clone().add(1, 'hour').format(),
-      offering: 1,
-      lastModified: today.clone().subtract(1, 'year'),
-    });
-    const endOfTheWeek = moment().add(6, 'days');
-    this.server.create('userevent', {
-      user: parseInt(this.user.id, 10),
-      startDate: endOfTheWeek.format(),
-      endDate: endOfTheWeek.clone().add(1, 'hour').format(),
-      offering: 2,
-      lastModified: today.clone().subtract(1, 'year'),
-    });
-    const yesterday = moment().subtract(25, 'hours');
-    this.server.create('userevent', {
-      user: parseInt(this.user.id, 10),
-      startDate: yesterday.format(),
-      endDate: yesterday.clone().add(1, 'hour').format(),
-      offering: 3,
-      lastModified: today.clone().subtract(1, 'year'),
-    });
-    await visit('/dashboard?show=agenda');
-    const events = findAll('tr');
-    assert.equal(events.length, 2);
-    const options = {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-    };
-    assert.dom(events[0]).hasText(today.toDate().toLocaleString([], options) + ' event 0');
-    assert.dom(events[1]).hasText(endOfTheWeek.toDate().toLocaleString([], options) + ' event 1');
-  });
-
   test('clear all filters', async function (assert) {
     const vocabulary = this.server.create('vocabulary', {
       school: this.school
@@ -658,7 +618,7 @@ module('Acceptance | Dashboard Calendar', function(hooks) {
   });
 
   test('query params work', async function(assert) {
-    const calendarPicker = '.dashboard-view-picker li:nth-of-type(4) button';
+    const calendarPicker = '.dashboard-view-picker li:nth-of-type(3) button';
     const schoolEvents = '.togglemyschedule label:nth-of-type(2)';
     const showFiltersButton = '.showfilters label:nth-of-type(2)';
     const hideFiltersButton = '.showfilters label:nth-of-type(1)';
