@@ -1,5 +1,5 @@
 {{#if (has-block)}}
-  {{yield this.displayText this.expand this.isTruncated}}
+  {{yield this.displayText this.expand this.isTruncated this.collapse this.expanded}}
 {{else}}
   <span class="truncate-text" ...attributes>
     {{this.displayText}}

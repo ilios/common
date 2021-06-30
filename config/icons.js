@@ -12,6 +12,7 @@ module.exports = function () {
       'calendar-minus',
       'caret-down',
       'caret-right',
+      'caret-square-up',
       'chart-bar',
       'check',
       'circle',

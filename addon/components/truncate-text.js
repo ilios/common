@@ -51,4 +51,9 @@ export default class TruncateTextComponent extends Component {
   expand() {
     this.expanded = true;
   }
+
+  @action
+  collapse() {
+    this.expanded = false;
+  }
 }

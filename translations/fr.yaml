@@ -47,6 +47,7 @@ general:
   cohorts: Cohortes
   cohortsManageTitle: "Manager des Cohortes"
   collapseDetail: "Masquer Détails"
+  collapseObjective: "Masquer Objectif"
   competencies: "Compétences"
   completeSessions: "Séances complète: prêt à publier"
   confirmObjectiveRemoval: "Êtes vous sûr de vouloir supprimer cet objectif?"

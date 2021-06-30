@@ -23,9 +23,49 @@
             {{domain.title}}
             <ul>
               {{#each domain.objectives as |title|}}
-                {{! template-lint-disable no-triple-curlies }}
                 <li>
-                  {{{title}}}
+                  {{! template-lint-disable no-triple-curlies }}
+                  <TruncateText
+                    @renderHtml={{true}}
+                    @text={{title}}
+                    @length={{50}}
+                    as |displayText expand isTruncated collapse expanded|
+                  >
+                    {{#if expanded}}
+                      {{{title}}}
+                      <button
+                        class="collapse-button"
+                        type="button"
+                        data-test-collapse
+                        {{on "click" collapse}}
+                      >
+
+                        <FaIcon @icon="caret-square-up" />
+                        {{t "general.collapseObjective"}}
+                      </button>
+                    {{else}}
+                      <button
+                        class="link-button"
+                        type="button"
+                        data-test-expand
+                        {{on "click" expand}}
+                      >
+                        {{displayText}}
+                      </button>
+                      {{#if isTruncated}}
+                        <FaIcon @icon="ellipsis-h" @transform="down-6" />
+                        <button
+                          class="link-button"
+                          type="button"
+                          aria-label={{t "general.expand"}}
+                          data-test-expand-truncated
+                          {{on "click" expand}}
+                        >
+                          <FaIcon @icon="info-circle" />
+                        </button>
+                      {{/if}}
+                    {{/if}}
+                  </TruncateText>
                 </li>
               {{/each}}
             </ul>
