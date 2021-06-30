@@ -47,6 +47,7 @@ general:
   cohorts: "Clases de la Graduación"
   cohortsManageTitle: "Administrar Clases de La Graduación"
   collapseDetail: "Esconder Detalles"
+  collapseObjective: "Esconder Objectivo"
   competencies: Competencias
   completeSessions: "Sesiónes Completas: Listo a Publicar"
   confirmObjectiveRemoval: "¿Está seguro que desea eliminar este objetivo?"
