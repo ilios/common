@@ -41,10 +41,11 @@
     <ul class="list-in-order">
       {{#each @objectives as |objective|}}
         <li>
-          {{objective.title}}
-          <span class="details">
+          {{! template-lint-disable no-triple-curlies }}
+          {{{objective.title}}}
+          <div class="details">
             {{objective.domain}}
-          </span>
+          </div>
         </li>
       {{else}}
         <li class="no-content">
