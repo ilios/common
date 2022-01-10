@@ -42,6 +42,7 @@
     "@glimmer/component": "^1.0.4",
     "@glimmer/tracking": "^1.0.4",
     "@popperjs/core": "^2.1.1",
+    "@vvo/tzdb": "^6.43.0",
     "broccoli-file-creator": "^2.1.1",
     "broccoli-funnel": "^3.0.0",
     "broccoli-merge-trees": "^4.0.0",
