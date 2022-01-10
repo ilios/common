@@ -1,5 +1,6 @@
 import Service from '@ember/service';
-import moment from 'moment';
+import { DateTime } from 'luxon';
+import { timeZonesNames } from '@vvo/tzdb';
 
 /**
  * Service wrapper around moment's timezone utilities.
@@ -11,15 +12,20 @@ export default class TimezoneService extends Service {
    * @returns {string}
    */
   formatTimezone(tz) {
-    return '(' + moment.tz(tz).format('Z') + ') ' + tz.replace(/\//g, ' - ').replace(/_/g, ' ');
+    return (
+      '(' +
+      DateTime.local().setZone(tz).toFormat('ZZ') +
+      ') ' +
+      tz.replace(/\//g, ' - ').replace(/_/g, ' ')
+    );
   }
 
   /**
-   * Returns the current timezone.
+   * Returns the name of the current timezone.
    * @returns {string}
    */
   getCurrentTimezone() {
-    return moment.tz.guess();
+    return DateTime.local().zone.name;
   }
 
   /**
@@ -30,9 +36,10 @@ export default class TimezoneService extends Service {
    */
   getTimezoneNames() {
     const currentTimezone = this.getCurrentTimezone();
-    let timezoneNames = moment.tz.names().filter((tz) => {
+    let timezoneNames = timeZonesNames.filter((tz) => {
       // filter out any non-canonical and deprecated timezone names, and all of those pesky Etc/* zones.
       return (
+        DateTime.local().setZone(tz).isValid &&
         tz.indexOf('/') !== -1 &&
         !tz.startsWith('Etc/') &&
         !tz.startsWith('Mexico/') &&

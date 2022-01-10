@@ -5,6 +5,7 @@ import { setupMirage } from 'ember-cli-mirage/test-support';
 import { render } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 import moment from 'moment';
+import { DateTime } from 'luxon';
 import { component } from 'ilios-common/page-objects/components/offering-form';
 
 module('Integration | Component | offering form', function (hooks) {
@@ -443,7 +444,7 @@ module('Integration | Component | offering form', function (hooks) {
   test('shows current timezone', async function (assert) {
     await render(hbs`<OfferingForm @close={{(noop)}} />`);
     const timezoneService = this.owner.lookup('service:timezone');
-    const currentTimezone = moment.tz.guess();
+    const currentTimezone = new DateTime.local().zone.name;
     assert.strictEqual(
       component.timezoneEditor.currentTimezone.text,
       timezoneService.formatTimezone(currentTimezone)
@@ -453,18 +454,23 @@ module('Integration | Component | offering form', function (hooks) {
   test('save date with new timezone', async function (assert) {
     assert.expect(8);
     const newTimezone = 'Pacific/Midway';
-    const utc = 'Etc/UTC';
-    const currentTimezone = moment.tz.guess();
+    const currentTimezone = new DateTime.local().zone.name;
     const offering = this.server.create('offering', {
       room: 'emerald bay',
-      startDate: moment('2005-06-24').hour(18).minute(24).toDate(),
-      endDate: moment('2005-06-24').hour(19).minute(24).toDate(),
+      startDate: DateTime.fromISO('2005-06-24').set({ hour: 18, minute: 24 }).toJSDate(),
+      endDate: DateTime.fromISO('2005-06-24').set({ hour: 19, minute: 24 }).toJSDate(),
     });
     const offeringModel = await this.owner.lookup('service:store').find('offering', offering.id);
     this.set('offering', offeringModel);
     this.set('save', async (startDate, endDate) => {
-      assert.strictEqual(moment(startDate).tz(utc).format('Y-MM-DD HH:mm'), '2005-06-25 05:24');
-      assert.strictEqual(moment(endDate).tz(utc).format('Y-MM-DD HH:mm'), '2005-06-25 06:24');
+      assert.strictEqual(
+        DateTime.fromJSDate(startDate).toUTC().toFormat('yyyy-LL-dd HH:mm'),
+        '2005-06-25 05:24'
+      );
+      assert.strictEqual(
+        DateTime.fromJSDate(endDate).toUTC().toFormat('yyyy-LL-dd HH:mm'),
+        '2005-06-25 06:24'
+      );
     });
     const timezoneService = this.owner.lookup('service:timezone');
     await render(

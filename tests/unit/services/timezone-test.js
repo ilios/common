@@ -1,32 +1,32 @@
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 
 module('Unit | Service | timezone', function (hooks) {
   setupTest(hooks);
 
   test('getCurrentTimezone', function (assert) {
     const service = this.owner.lookup('service:timezone');
-    assert.strictEqual(moment.tz.guess(), service.getCurrentTimezone());
+    assert.strictEqual(DateTime.now().zone.name, service.getCurrentTimezone());
   });
 
   test('getTimezoneNames', function (assert) {
     const service = this.owner.lookup('service:timezone');
     const names = service.getTimezoneNames();
-    const currentTimezone = moment.tz.guess();
+    const currentTimezone = DateTime.now().zone.name;
     assert.ok(names.includes(currentTimezone));
     assert.notOk(names.includes('Etc/GMT-13'));
     assert.notOk(names.includes('Canada/Newfoundland'));
     assert.notOk(names.includes('UTC'));
     assert.strictEqual(names[0], 'Africa/Abidjan');
-    assert.strictEqual(names[names.length - 1], 'Pacific/Yap');
+    assert.strictEqual(names[names.length - 1], 'Pacific/Wallis');
   });
 
   test('formatTimezone', function (assert) {
     const service = this.owner.lookup('service:timezone');
-    const timezone = 'America/Los_Angeles';
-    const offset = moment.tz(timezone).format('Z');
-    assert.strictEqual(`(${offset}) America - Los Angeles`, service.formatTimezone(timezone));
+    const tz = 'America/Los_Angeles';
+    const offset = DateTime.local().setZone(tz).toFormat('ZZ');
+    assert.strictEqual(service.formatTimezone(tz), `(${offset}) America - Los Angeles`);
   });
 
   test('getTimezones', function (assert) {
