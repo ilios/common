@@ -7,19 +7,16 @@ module('Unit | Service | timezone', function (hooks) {
 
   test('getCurrentTimezone', function (assert) {
     const service = this.owner.lookup('service:timezone');
-    assert.strictEqual(DateTime.now().zone.name, service.getCurrentTimezone());
+    assert.strictEqual(DateTime.local().zone.name, service.getCurrentTimezone());
   });
 
   test('getTimezoneNames', function (assert) {
     const service = this.owner.lookup('service:timezone');
     const names = service.getTimezoneNames();
-    const currentTimezone = DateTime.now().zone.name;
-    assert.ok(names.includes(currentTimezone));
     assert.notOk(names.includes('Etc/GMT-13'));
     assert.notOk(names.includes('Canada/Newfoundland'));
-    assert.notOk(names.includes('UTC'));
-    assert.strictEqual(names[0], 'Africa/Abidjan');
-    assert.strictEqual(names[names.length - 1], 'Pacific/Wallis');
+    assert.ok(names.includes('Africa/Abidjan'));
+    assert.ok(names.includes('Pacific/Wallis'));
   });
 
   test('formatTimezone', function (assert) {
