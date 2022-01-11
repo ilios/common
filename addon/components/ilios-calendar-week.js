@@ -1,11 +1,8 @@
 import Component from '@glimmer/component';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { action } from '@ember/object';
 
 export default class IliosCalendarWeekComponent extends Component {
-  get weekOf() {
-    return moment(this.args.date).startOf('week').format('MMMM Do YYYY');
-  }
   get ilmPreWorkEvents() {
     const preWork = this.args.calendarEvents.reduce((arr, ev) => {
       if (!ev.isBlanked && ev.isPublished && !ev.isScheduled) {
@@ -28,12 +25,12 @@ export default class IliosCalendarWeekComponent extends Component {
   }
   get singleDayEvents() {
     return this.nonIlmPreWorkEvents.filter((event) =>
-      moment(event.startDate).isSame(moment(event.endDate), 'day')
+      DateTime.fromISO(event.startDate).hasSame(DateTime.fromISO(event.endDate), 'day')
     );
   }
   get multiDayEventsList() {
     return this.nonIlmPreWorkEvents.filter(
-      (event) => !moment(event.startDate).isSame(moment(event.endDate), 'day')
+      (event) => !DateTime.fromISO(event.startDate).hasSame(DateTime.fromISO(event.endDate), 'day')
     );
   }
 

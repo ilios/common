@@ -4,16 +4,11 @@ import { setupIntl } from 'ember-intl/test-support';
 import { render } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 import { component as weeklyCalendarComponent } from 'ilios-common/page-objects/components/weekly-calendar';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 
 module('Integration | Component | ilios calendar week', function (hooks) {
   setupRenderingTest(hooks);
   setupIntl(hooks, 'en-us');
-
-  hooks.beforeEach(function () {
-    this.actions = {};
-    this.send = (actionName, ...args) => this.actions[actionName].apply(this, args);
-  });
 
   test('it renders', async function (assert) {
     assert.expect(2);
@@ -29,20 +24,20 @@ module('Integration | Component | ilios calendar week', function (hooks) {
     assert.expect(3);
     const date = new Date('2015-09-30T12:00:00');
     this.set('date', date);
-    this.actions.changeDate = (newDate) => {
+    this.set('changeDate', (newDate) => {
       assert.ok(newDate instanceof Date);
       assert.strictEqual(newDate.toString().search(/Sun Sep 27/), 0);
-    };
-    this.actions.changeView = (newView) => {
+    });
+    this.set('changeView', (newView) => {
       assert.strictEqual(newView, 'day');
-    };
+    });
 
     await render(hbs`<IliosCalendarWeek
       @date={{this.date}}
       @calendarEvents={{(array)}}
       @areDaysSelectable={{true}}
-      @changeDate={{action "changeDate"}}
-      @changeView={{action "changeView"}}
+      @changeDate={{this.changeDate}}
+      @changeView={{this.changeView}}
     />`);
     weeklyCalendarComponent.dayHeadings[0].selectDay();
   });
@@ -51,16 +46,13 @@ module('Integration | Component | ilios calendar week', function (hooks) {
     assert.expect(0);
     const date = new Date('2015-09-30T12:00:00');
     this.set('date', date);
-    this.set('nothing', () => {
-      assert.ok(false, 'this should never be called');
-    });
 
     await render(hbs`<IliosCalendarWeek
       @date={{this.date}}
       @calendarEvents={{(array)}}
       @areDaysSelectable={{false}}
-      @changeDate={{this.nothing}}
-      @changeView={{this.nothing}}
+      @changeDate={{(noop)}}
+      @changeView={{(noop)}}
     />`);
     await weeklyCalendarComponent.dayHeadings[0].selectDay();
   });
@@ -68,16 +60,16 @@ module('Integration | Component | ilios calendar week', function (hooks) {
   test('prework', async function (assert) {
     assert.expect(3);
 
-    const date = moment(new Date('2015-09-30T12:00:00'));
+    const date = DateTime.fromISO('2015-09-30T12:00:00');
 
     const event = createUserEventObject();
-    event.startDate = date.clone();
-    event.endDate = date.clone().add(1, 'hour');
+    event.startDate = date.toISO();
+    event.endDate = date.plus({ hours: 1 }).toISO();
     event.prerequisites = [
       {
         name: 'prework 1',
-        startDate: moment().format(),
-        endDate: moment().format(),
+        startDate: DateTime.local().toISO(),
+        endDate: DateTime.local().toISO(),
         ilmSession: true,
         slug: 'whatever',
         postrequisiteSlug: 'something',
@@ -88,8 +80,8 @@ module('Integration | Component | ilios calendar week', function (hooks) {
       },
       {
         name: 'prework 2',
-        startDate: moment().format(),
-        endDate: moment().format(),
+        startDate: DateTime.local().toISO(),
+        endDate: DateTime.local().toISO(),
         location: 'room 111',
         ilmSession: true,
         slug: 'whatever',
@@ -101,8 +93,8 @@ module('Integration | Component | ilios calendar week', function (hooks) {
       },
       {
         name: 'blanked prework',
-        startDate: moment().format(),
-        endDate: moment().format(),
+        startDate: DateTime.local().toISO(),
+        endDate: DateTime.local().toISO(),
         location: 'room 111',
         ilmSession: true,
         slug: 'whatever',
@@ -114,8 +106,8 @@ module('Integration | Component | ilios calendar week', function (hooks) {
       },
       {
         name: 'scheduled prework',
-        startDate: moment().format(),
-        endDate: moment().format(),
+        startDate: DateTime.local().toISO(),
+        endDate: DateTime.local().toISO(),
         location: 'room 111',
         ilmSession: true,
         slug: 'whatever',
@@ -127,8 +119,8 @@ module('Integration | Component | ilios calendar week', function (hooks) {
       },
       {
         name: 'unpublished prework',
-        startDate: moment().format(),
-        endDate: moment().format(),
+        startDate: DateTime.local().toISO(),
+        endDate: DateTime.local().toISO(),
         location: 'room 111',
         ilmSession: true,
         slug: 'whatever',
@@ -139,7 +131,7 @@ module('Integration | Component | ilios calendar week', function (hooks) {
         isBlanked: false,
       },
     ];
-    this.set('date', date.toDate());
+    this.set('date', date.toJSDate());
     this.set('events', [event]);
     await render(hbs`<IliosCalendarWeek
       @date={{this.date}}
@@ -158,11 +150,11 @@ module('Integration | Component | ilios calendar week', function (hooks) {
   test('prework to unpublished/scheduled/blanked events is not visible', async function (assert) {
     assert.expect(1);
 
-    const date = moment(new Date('2015-09-30T12:00:00'));
+    const date = DateTime.fromISO('2015-09-30T12:00:00');
     const publishedPrework = {
       name: 'published prework',
-      startDate: moment().format(),
-      endDate: moment().format(),
+      startDate: DateTime.local().toISO(),
+      endDate: DateTime.local().toISO(),
       ilmSession: true,
       slug: 'whatever',
       postrequisiteSlug: 'something',
@@ -189,12 +181,12 @@ module('Integration | Component | ilios calendar week', function (hooks) {
     const events = [unpublishedEvent, scheduledEvent, blankedEvent];
 
     events.forEach((event) => {
-      event.startDate = date.clone();
-      event.endDate = date.clone().add(1, 'hour');
+      event.startDate = date.toISO();
+      event.endDate = date.plus({ hours: 1 }).toISO();
       event.prerequisites = [publishedPrework];
     });
 
-    this.set('date', date.toDate());
+    this.set('date', date.toJSDate());
     this.set('events', events);
     await render(hbs`<IliosCalendarWeek
       @date={{this.date}}
