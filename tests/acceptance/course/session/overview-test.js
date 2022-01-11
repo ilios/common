@@ -1,8 +1,7 @@
 import { currentRouteName } from '@ember/test-helpers';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { module, test } from 'qunit';
 import { setupAuthentication } from 'ilios-common';
-
 import { setupApplicationTest } from 'ember-qunit';
 import { enableFeature } from 'ember-feature-flags/test-support';
 import { setupMirage } from 'ember-cli-mirage/test-support';
@@ -44,7 +43,7 @@ module('Acceptance | Session - Overview', function (hooks) {
       school: this.school,
       administeredSchools: [this.school],
     });
-    const ilmSession = this.server.create('ilmSession');
+    const ilmSession = this.server.create('ilmSession', { dueDate: new Date() });
     this.server.create('session', {
       course: this.course,
       ilmSession,
@@ -57,7 +56,7 @@ module('Acceptance | Session - Overview', function (hooks) {
     assert.strictEqual(parseInt(page.details.overview.ilmHours.value, 10), ilmSession.hours);
     assert.strictEqual(
       page.details.overview.ilmDueDateAndTime.value,
-      new Date(ilmSession.dueDate).toLocaleDateString('en', {
+      ilmSession.dueDate.toLocaleDateString('en', {
         month: 'numeric',
         day: 'numeric',
         year: '2-digit',
@@ -94,14 +93,18 @@ module('Acceptance | Session - Overview', function (hooks) {
     assert.strictEqual(parseInt(page.details.overview.ilmHours.value, 10), 1);
     assert.strictEqual(
       page.details.overview.ilmDueDateAndTime.value,
-      moment().add(6, 'weeks').set('hour', 17).set('minute', 0).toDate().toLocaleDateString('en', {
-        month: 'numeric',
-        day: 'numeric',
-        year: '2-digit',
-        hour12: true,
-        hour: 'numeric',
-        minute: 'numeric',
-      })
+      DateTime.local()
+        .plus({ weeks: 6 })
+        .set({ hours: 17, minutes: 0 })
+        .toJSDate()
+        .toLocaleDateString('en', {
+          month: 'numeric',
+          day: 'numeric',
+          year: '2-digit',
+          hour12: true,
+          hour: 'numeric',
+          minute: 'numeric',
+        })
     );
   });
 
@@ -140,13 +143,15 @@ module('Acceptance | Session - Overview', function (hooks) {
       course: this.course,
       ilmSession,
     });
-    const newDate = moment(ilmSession.dueDate).add(3, 'weeks').set('hour', 23).set('minute', 55);
+    const newDate = DateTime.fromJSDate(ilmSession.dueDate)
+      .plus({ weeks: 3 })
+      .set({ hours: 23, minutes: 55 });
     await page.visit({ courseId: 1, sessionId: 1 });
 
     assert.strictEqual(currentRouteName(), 'session.index');
     assert.strictEqual(
       page.details.overview.ilmDueDateAndTime.value,
-      new Date(ilmSession.dueDate).toLocaleDateString('en', {
+      ilmSession.dueDate.toLocaleDateString('en', {
         month: 'numeric',
         day: 'numeric',
         year: '2-digit',
@@ -156,15 +161,17 @@ module('Acceptance | Session - Overview', function (hooks) {
       })
     );
     await page.details.overview.ilmDueDateAndTime.edit();
-    await page.details.overview.ilmDueDateAndTime.datePicker.set(newDate.toDate());
-    await page.details.overview.ilmDueDateAndTime.timePicker.hour.select(newDate.format('h'));
-    await page.details.overview.ilmDueDateAndTime.timePicker.minute.select(newDate.minute());
-    await page.details.overview.ilmDueDateAndTime.timePicker.ampm.select(newDate.format('a'));
+    await page.details.overview.ilmDueDateAndTime.datePicker.set(newDate.toJSDate());
+    await page.details.overview.ilmDueDateAndTime.timePicker.hour.select(newDate.toFormat('h'));
+    await page.details.overview.ilmDueDateAndTime.timePicker.minute.select(newDate.toFormat('m'));
+    await page.details.overview.ilmDueDateAndTime.timePicker.ampm.select(
+      newDate.toFormat('a').toLowerCase()
+    );
 
     await page.details.overview.ilmDueDateAndTime.save();
     assert.strictEqual(
       page.details.overview.ilmDueDateAndTime.value,
-      newDate.toDate().toLocaleDateString('en', {
+      newDate.toJSDate().toLocaleDateString('en', {
         month: 'numeric',
         day: 'numeric',
         year: '2-digit',
@@ -202,7 +209,7 @@ module('Acceptance | Session - Overview', function (hooks) {
     this.server.create('session', {
       course: this.course,
       sessionType: this.sessionTypes[0],
-      updatedAt: moment('2019-07-09 17:00:00').toDate(),
+      updatedAt: DateTime.fromISO('2019-07-09T17:00:00').toJSDate(),
     });
     await page.visit({ courseId: 1, sessionId: 1 });
 
