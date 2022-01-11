@@ -3,7 +3,7 @@ import { setupRenderingTest } from 'ember-qunit';
 import { setupIntl } from 'ember-intl/test-support';
 import { render } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { setupMirage } from 'ember-cli-mirage/test-support';
 
 module('Integration | Component | offering-calendar', function (hooks) {
@@ -13,8 +13,8 @@ module('Integration | Component | offering-calendar', function (hooks) {
 
   test('shows events', async function (assert) {
     assert.expect(1);
-    const today = moment().hour(8);
-    const tomorrow = moment().add(1, 'day').hour(8);
+    const today = DateTime.local().set({ hour: 8 });
+    const tomorrow = today.plus({ day: 1 }).set({ hour: 8 });
     const course = this.server.create('course');
     const sessionType = this.server.create('session-type');
     const session = this.server.create('session', {
@@ -23,14 +23,14 @@ module('Integration | Component | offering-calendar', function (hooks) {
     });
 
     const offering1 = this.server.create('offering', {
-      startDate: today.format(),
-      endDate: today.clone().add('1', 'hour').format(),
+      startDate: today.toISO(),
+      endDate: today.plus({ hour: 1 }).toISO(),
       location: 123,
       session,
     });
     const offering2 = this.server.create('offering', {
-      startDate: today.format(),
-      endDate: today.clone().add('1', 'hour').format(),
+      startDate: today.toISO(),
+      endDate: today.plus({ hour: 1 }).toISO(),
       location: 123,
       session,
     });
@@ -41,8 +41,8 @@ module('Integration | Component | offering-calendar', function (hooks) {
     const learnerGroupModel = await this.owner
       .lookup('service:store')
       .find('learner-group', learnerGroup.id);
-    this.set('startDate', today.toDate());
-    this.set('endDate', tomorrow.toDate());
+    this.set('startDate', today.toJSDate());
+    this.set('endDate', tomorrow.toJSDate());
     this.set('session', sessionModel);
     this.set('learnerGroups', [learnerGroupModel]);
     await render(hbs`<OfferingCalendar

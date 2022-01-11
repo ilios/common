@@ -1,7 +1,7 @@
 import Service from '@ember/service';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { setupMirage } from 'ember-cli-mirage/test-support';
 
 module('Integration | Service | school events', function (hooks) {
@@ -24,22 +24,22 @@ module('Integration | Service | school events', function (hooks) {
       prerequisites: [],
       postrequisites: [],
     };
-    const from = moment('20150305', 'YYYYMMDD').hour(0);
-    const to = from.clone().hour(24);
+    const from = DateTime.fromISO('2015-03-05');
+    const to = from.plus({ hour: 24 });
 
     this.server.get(`/api/schoolevents/:id`, (scheme, { params, queryParams }) => {
       assert.ok('id' in params);
       assert.strictEqual(parseInt(params.id, 10), 7);
       assert.ok('from' in queryParams);
       assert.ok('to' in queryParams);
-      assert.strictEqual(parseInt(queryParams.from, 10), from.unix());
-      assert.strictEqual(parseInt(queryParams.to, 10), to.unix());
+      assert.strictEqual(parseInt(queryParams.from, 10), from.toSeconds());
+      assert.strictEqual(parseInt(queryParams.to, 10), to.toSeconds());
 
       return { events: [event1, event2] };
     });
     const schoolId = 7;
     const subject = this.owner.lookup('service:school-events');
-    const events = await subject.getEvents(schoolId, from.unix(), to.unix());
+    const events = await subject.getEvents(schoolId, from.toSeconds(), to.toSeconds());
     assert.strictEqual(events.length, 2);
     assert.strictEqual(events[0].ilmSession, event2.ilmSession);
     assert.strictEqual(events[0].startDate, event2.startDate);
@@ -60,22 +60,22 @@ module('Integration | Service | school events', function (hooks) {
 
   test('getEvents - with configured namespace', async function (assert) {
     assert.expect(4);
-    const iliosConfigMock = Service.extend({
-      apiNameSpace: 'geflarknik',
-    });
-    this.owner.register('service:iliosConfig', iliosConfigMock);
+    class IliosConfigMock extends Service {
+      apiNameSpace = 'geflarknik';
+    }
+    this.owner.register('service:iliosConfig', IliosConfigMock);
 
-    const from = moment('20150305', 'YYYYMMDD').hour(0);
-    const to = from.clone().hour(24);
+    const from = DateTime.fromISO('2015-03-05');
+    const to = from.plus({ hour: 24 });
     this.server.get(`/geflarknik/schoolevents/:id`, (scheme, { params, queryParams }) => {
       assert.strictEqual(parseInt(params.id, 10), 3);
-      assert.strictEqual(parseInt(queryParams.from, 10), from.unix());
-      assert.strictEqual(parseInt(queryParams.to, 10), to.unix());
+      assert.strictEqual(parseInt(queryParams.from, 10), from.toSeconds());
+      assert.strictEqual(parseInt(queryParams.to, 10), to.toSeconds());
       return { events: [] };
     });
     const subject = this.owner.lookup('service:school-events');
     const schoolId = 3;
-    const events = await subject.getEvents(schoolId, from.unix(), to.unix());
+    const events = await subject.getEvents(schoolId, from.toSeconds(), to.toSeconds());
     assert.strictEqual(events.length, 0);
   });
 
@@ -96,11 +96,11 @@ module('Integration | Service | school events', function (hooks) {
       postrequisites: [],
     };
     this.server.get(`/api/schoolevents/:id`, (scheme, { params, queryParams }) => {
-      const from = moment('20110421', 'YYYYMMDD').hour(0);
-      const to = from.clone().hour(24);
+      const from = DateTime.fromISO('2011-04-21');
+      const to = from.plus({ hour: 24 });
       assert.strictEqual(parseInt(params.id, 10), 7);
-      assert.strictEqual(parseInt(queryParams.from, 10), from.unix());
-      assert.strictEqual(parseInt(queryParams.to, 10), to.unix());
+      assert.strictEqual(parseInt(queryParams.from, 10), from.toSeconds());
+      assert.strictEqual(parseInt(queryParams.to, 10), to.toSeconds());
 
       return { events: [event1, event2] };
     });
@@ -133,11 +133,11 @@ module('Integration | Service | school events', function (hooks) {
       postrequisites: [],
     };
     this.server.get(`/api/schoolevents/:id`, (scheme, { params, queryParams }) => {
-      const from = moment('20080902', 'YYYYMMDD').hour(0);
-      const to = from.clone().hour(24);
+      const from = DateTime.fromISO('2008-09-02');
+      const to = from.plus({ hour: 24 });
       assert.strictEqual(parseInt(params.id, 10), 7);
-      assert.strictEqual(parseInt(queryParams.from, 10), from.unix());
-      assert.strictEqual(parseInt(queryParams.to, 10), to.unix());
+      assert.strictEqual(parseInt(queryParams.from, 10), from.toSeconds());
+      assert.strictEqual(parseInt(queryParams.to, 10), to.toSeconds());
 
       return { events: [event1, event2] };
     });

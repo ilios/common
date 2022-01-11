@@ -6,7 +6,7 @@ import { setupRenderingTest } from 'ember-qunit';
 import { setupIntl } from 'ember-intl/test-support';
 import { render, click, find, findAll, fillIn, blur as emberBlur } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { setupMirage } from 'ember-cli-mirage/test-support';
 import queryString from 'query-string';
 
@@ -26,7 +26,7 @@ module('Integration | Component | course rollover', function (hooks) {
 
     await render(hbs`<CourseRollover @course={{this.course}} />`);
 
-    const lastYear = Number(moment().subtract(1, 'year').format('YYYY'));
+    const lastYear = DateTime.local().minus({ years: 1 }).year;
     const yearSelect = '.year-select select';
     const title = '.title input';
 
@@ -55,7 +55,7 @@ module('Integration | Component | course rollover', function (hooks) {
 
     await render(hbs`<CourseRollover @course={{this.course}} />`);
 
-    const lastYear = Number(moment().subtract(1, 'year').format('YYYY'));
+    const lastYear = DateTime.local().minus({ years: 1 }).year;
     const yearSelect = '.year-select select';
     for (let i = 0; i < 6; i++) {
       assert
@@ -70,13 +70,13 @@ module('Integration | Component | course rollover', function (hooks) {
     const course = this.server.create('course', {
       title: 'old title',
       school,
-      startDate: moment().hour(0).minute(0).second(0).toDate(),
+      startDate: DateTime.local().set({ hours: 0, minutes: 0, seconds: 0 }).toJSDate(),
     });
     const courseModel = await this.owner.lookup('service:store').find('course', course.id);
     this.set('course', courseModel);
 
     this.server.post(`/api/courses/${course.id}/rollover`, function (schema, request) {
-      const lastYear = Number(moment().subtract(1, 'year').format('YYYY'));
+      const lastYear = DateTime.local().minus({ years: 1 }).year;
       const data = queryString.parse(request.requestBody);
       assert.ok('year' in data);
       assert.strictEqual(parseInt(data.year, 10), lastYear);
@@ -107,7 +107,7 @@ module('Integration | Component | course rollover', function (hooks) {
     const course = this.server.create('course', {
       title: 'old title',
       school,
-      startDate: moment().hour(0).minute(0).second(0).toDate(),
+      startDate: DateTime.local().set({ hours: 0, minutes: 0, seconds: 0 }).toJSDate(),
     });
     const courseModel = await this.owner.lookup('service:store').find('course', course.id);
     this.set('course', courseModel);
@@ -140,11 +140,11 @@ module('Integration | Component | course rollover', function (hooks) {
     const course = this.server.create('course', {
       title: 'old title',
       school,
-      startDate: moment().hour(0).minute(0).second(0).toDate(),
+      startDate: DateTime.local().set({ hours: 0, minutes: 0, seconds: 0 }).toJSDate(),
     });
     const courseModel = await this.owner.lookup('service:store').find('course', course.id);
     this.set('course', courseModel);
-    const selectedYear = parseInt(moment().add(2, 'years').format('YYYY'), 10);
+    const selectedYear = DateTime.local().plus({ years: 2 }).year;
     this.server.post(`/api/courses/${course.id}/rollover`, function (schema, request) {
       const data = queryString.parse(request.requestBody);
       assert.ok('year' in data);
@@ -174,7 +174,7 @@ module('Integration | Component | course rollover', function (hooks) {
 
   test('disable years when title already exists', async function (assert) {
     assert.expect(5);
-    const lastYear = Number(moment().subtract(1, 'year').format('YYYY'));
+    const lastYear = DateTime.local().minus({ years: 1 }).year;
     const school = this.server.create('school');
     const course = this.server.create('course', {
       title: 'to be rolled',
@@ -211,7 +211,7 @@ module('Integration | Component | course rollover', function (hooks) {
 
   test('rollover into same year with title changed #1342', async function (assert) {
     assert.expect(2);
-    const thisYear = Number(moment().format('YYYY'));
+    const thisYear = DateTime.local().year;
     const school = this.server.create('school');
     this.server.create('course', {
       id: 2,
@@ -232,20 +232,26 @@ module('Integration | Component | course rollover', function (hooks) {
   test('rollover course with new start date', async function (assert) {
     assert.expect(7);
     // ensure that rollover date and course start date fall on the same day of the week.
-    let courseStartDate = moment().hour(0).minute(0).subtract(1, 'week').day(1);
+    let courseStartDate = DateTime.local()
+      .set({ hours: 0, minutes: 0, seconds: 0 })
+      .minus({ weeks: 1 })
+      .set({ weekday: 1 });
     // Also, make sure that we're not crossing year boundaries here.
     // Otherwise, ilios will propel us into the current year which we do not want right here.
-    if (courseStartDate.year() !== moment().year()) {
-      courseStartDate = moment().hour(0).minute(0).add(1, 'week').day(1);
+    if (courseStartDate.year !== DateTime.local().year) {
+      courseStartDate = DateTime.local()
+        .set({ hours: 0, minutes: 0, seconds: 0 })
+        .plus({ weeks: 1 })
+        .set({ weekday: 1 });
     }
 
-    const rolloverDate = moment(courseStartDate).add(1, 'week');
+    const rolloverDate = courseStartDate.plus({ weeks: 1 });
 
     const school = this.server.create('school');
     const course = this.server.create('course', {
       title: 'old course',
       school,
-      startDate: courseStartDate.toDate(),
+      startDate: courseStartDate.toJSDate(),
     });
     const courseModel = await this.owner.lookup('service:store').find('course', course.id);
     this.set('course', courseModel);
@@ -253,10 +259,10 @@ module('Integration | Component | course rollover', function (hooks) {
     this.server.post(`/api/courses/${course.id}/rollover`, function (schema, request) {
       const data = queryString.parse(request.requestBody);
       assert.ok('newStartDate' in data, 'A new start date was passed.');
-      const newStartDate = moment(data.newStartDate);
+      const newStartDate = DateTime.fromISO(data.newStartDate);
       assert.strictEqual(
-        newStartDate.format('YYYY-MM-DD'),
-        rolloverDate.format('YYYY-MM-DD'),
+        newStartDate.toFormat('D'),
+        rolloverDate.toFormat('D'),
         'New start date is rollover date.'
       );
       return this.serialize(
@@ -271,34 +277,34 @@ module('Integration | Component | course rollover', function (hooks) {
     />`);
     const advancedOptions = '.advanced-options';
     const startDate = `${advancedOptions} input:nth-of-type(1)`;
-    await fillIn('[data-test-year]', Number(courseStartDate.format('YYYY')));
+    await fillIn('[data-test-year]', courseStartDate.year);
 
     await click(startDate);
     const picker = find('[data-test-course-rollover-picker]')._flatpickr;
     assert.strictEqual(
       picker.currentYear,
-      courseStartDate.year(),
+      courseStartDate.year,
       'Selected year initialized to course start date year.'
     );
     assert.strictEqual(
       picker.currentMonth,
-      courseStartDate.month(),
+      courseStartDate.toJSDate().getMonth(),
       'Selected month initialized to course start date month.'
     );
-    picker.setDate(rolloverDate.toDate(), true);
+    picker.setDate(rolloverDate.toJSDate(), true);
     assert.strictEqual(
       picker.currentYear,
-      rolloverDate.year(),
+      rolloverDate.year,
       'Selected year changed to rollover date year.'
     );
     assert.strictEqual(
       picker.currentMonth,
-      rolloverDate.month(),
+      rolloverDate.toJSDate().getMonth(),
       'Selected month changed to rollover date month.'
     );
     assert.strictEqual(
       picker.selectedDates[0].getDate(),
-      rolloverDate.date(),
+      rolloverDate.day,
       'Selected day changed to rollover date day.'
     );
     await click('.done');
@@ -307,19 +313,25 @@ module('Integration | Component | course rollover', function (hooks) {
   test('rollover course prohibit non-matching day-of-week date selection', async function (assert) {
     assert.expect(4);
     // rollover date and course start date don't fall on the same day of the week.
-    let courseStartDate = moment().hour(0).minute(0).subtract(1, 'week').day(1);
+    let courseStartDate = DateTime.local()
+      .set({ hours: 0, minutes: 0, seconds: 0 })
+      .minus({ weeks: 1 })
+      .set({ weekday: 1 });
     // Make sure that we're not crossing year boundaries here.
     // Otherwise, ilios will propel us into the current year which we do not want right here.
-    if (courseStartDate.year() !== moment().year()) {
-      courseStartDate = moment().hour(0).minute(0).add(1, 'week').day(1);
+    if (courseStartDate.year !== DateTime.local().year) {
+      courseStartDate = DateTime.local()
+        .set({ hours: 0, minutes: 0, seconds: 0 })
+        .plus({ weeks: 1 })
+        .set({ weekday: 1 });
     }
-    const rolloverDate = moment(courseStartDate).add(1, 'week').day(3);
+    const rolloverDate = courseStartDate.plus({ weeks: 1 }).set({ weekday: 3 });
 
     const school = this.server.create('school');
     const course = this.server.create('course', {
       title: 'test title',
       school,
-      startDate: courseStartDate.toDate(),
+      startDate: courseStartDate.toJSDate(),
     });
     const courseModel = await this.owner.lookup('service:store').find('course', course.id);
     this.set('course', courseModel);
@@ -327,10 +339,10 @@ module('Integration | Component | course rollover', function (hooks) {
     this.server.post(`/api/courses/${course.id}/rollover`, function (schema, request) {
       const data = queryString.parse(request.requestBody);
       assert.ok('newStartDate' in data, 'A new start date was passed.');
-      const newStartDate = moment(data.newStartDate);
+      const newStartDate = DateTime.fromISO(data.newStartDate);
       assert.strictEqual(
-        newStartDate.format('YYYY-MM-DD'),
-        courseStartDate.format('YYYY-MM-DD'),
+        newStartDate.toFormat('D'),
+        courseStartDate.toFormat('D'),
         'New start date is course start date.'
       );
       return this.serialize(
@@ -348,20 +360,20 @@ module('Integration | Component | course rollover', function (hooks) {
     const yearSelect = '.year-select select';
     const startDate = `${advancedOptions} input:nth-of-type(1)`;
 
-    await fillIn(yearSelect, courseStartDate.format('YYYY'));
+    await fillIn(yearSelect, courseStartDate.year);
     await emberBlur(yearSelect);
 
     await click(startDate);
     const picker = find('[data-test-course-rollover-picker]')._flatpickr;
-    picker.setDate(rolloverDate.toDate(), true);
+    picker.setDate(rolloverDate.toJSDate(), true);
     assert.strictEqual(
       picker.currentYear,
-      courseStartDate.year(),
+      courseStartDate.year,
       'Selected year initialized to course start date year.'
     );
     assert.strictEqual(
       picker.currentMonth,
-      courseStartDate.month(),
+      courseStartDate.toJSDate().getMonth(),
       'Selected month initialized to course start date month.'
     );
     await click('.done');
@@ -374,18 +386,20 @@ module('Integration | Component | course rollover', function (hooks) {
   test('rollover start date adjustment with former year course start date', async function (assert) {
     assert.expect(2);
 
-    const courseStartDate = moment('2019-01-15').hour(0).minute(0).subtract(2, 'year').day(1);
-    const rolloverDate = moment()
-      .hour(0)
-      .minute(0)
-      .isoWeek(courseStartDate.isoWeek())
-      .isoWeekday(courseStartDate.isoWeekday());
+    const courseStartDate = DateTime.fromISO('2019-01-15').minus({ years: 2 }).set({ weekday: 1 });
+    const rolloverDate = DateTime.local().set({
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      weekNumber: courseStartDate.weekNumber,
+      weekday: courseStartDate.weekday,
+    });
 
     const school = this.server.create('school');
     const course = this.server.create('course', {
       title: 'old course',
       school,
-      startDate: courseStartDate.toDate(),
+      startDate: courseStartDate.toJSDate(),
     });
     const courseModel = await this.owner.lookup('service:store').find('course', course.id);
     this.set('course', courseModel);
@@ -397,19 +411,19 @@ module('Integration | Component | course rollover', function (hooks) {
     const yearSelect = '.year-select select';
     const startDate = `${advancedOptions} input:nth-of-type(1)`;
 
-    await fillIn(yearSelect, rolloverDate.format('YYYY'));
+    await fillIn(yearSelect, rolloverDate.year);
     await emberBlur(yearSelect);
 
     await click(startDate);
     const picker = find('[data-test-course-rollover-picker]')._flatpickr;
     assert.strictEqual(
       picker.currentYear,
-      rolloverDate.year(),
+      rolloverDate.year,
       'Selected year initialized to this year.'
     );
     assert.strictEqual(
       picker.currentMonth,
-      rolloverDate.month(),
+      rolloverDate.toJSDate().getMonth(),
       "Selected month initialized to this year's equivalent of course's start month."
     );
   });

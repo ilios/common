@@ -2,7 +2,7 @@ import EmberObject from '@ember/object';
 import Service from '@ember/service';
 import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { setupMirage } from 'ember-cli-mirage/test-support';
 
 module('Integration | Service | user events', function (hooks) {
@@ -10,13 +10,13 @@ module('Integration | Service | user events', function (hooks) {
   setupMirage(hooks);
 
   hooks.beforeEach(function () {
-    const MockCurrentUserService = Service.extend({
+    class MockCurrentUserService extends Service {
       async getModel() {
         return EmberObject.create({
           id: 1,
         });
-      },
-    });
+      }
+    }
     this.owner.register('service:current-user', MockCurrentUserService);
     this.currentUser = this.owner.lookup('service:current-user');
   });
@@ -40,21 +40,21 @@ module('Integration | Service | user events', function (hooks) {
       prerequisites: [],
       postrequisites: [],
     };
-    const from = moment('20150305', 'YYYYMMDD').hour(0);
-    const to = from.clone().hour(24);
+    const from = DateTime.fromISO('2015-03-05');
+    const to = from.plus({ hour: 24 });
     this.server.get(`/api/userevents/:id`, (scheme, { params, queryParams }) => {
       assert.ok('id' in params);
       assert.strictEqual(parseInt(params.id, 10), 1);
       assert.ok('from' in queryParams);
       assert.ok('to' in queryParams);
-      assert.strictEqual(parseInt(queryParams.from, 10), from.unix());
-      assert.strictEqual(parseInt(queryParams.to, 10), to.unix());
+      assert.strictEqual(parseInt(queryParams.from, 10), from.toSeconds());
+      assert.strictEqual(parseInt(queryParams.to, 10), to.toSeconds());
 
       return { userEvents: [event1, event2, event3] };
     });
 
     const subject = this.owner.lookup('service:user-events');
-    const events = await subject.getEvents(from.unix(), to.unix());
+    const events = await subject.getEvents(from.toSeconds(), to.toSeconds());
     assert.strictEqual(events.length, 3);
     assert.strictEqual(events[0].ilmSession, event2.ilmSession);
     assert.strictEqual(events[0].startDate, event2.startDate);
@@ -78,27 +78,27 @@ module('Integration | Service | user events', function (hooks) {
       },
     });
     const subject = this.owner.lookup('service:user-events');
-    const from = moment('20150305', 'YYYYMMDD').hour(0);
-    const to = from.clone().hour(24);
-    const events = await subject.getEvents(from.unix(), to.unix());
+    const from = DateTime.fromISO('2015-03-05');
+    const to = from.plus({ hour: 24 });
+    const events = await subject.getEvents(from.toSeconds(), to.toSeconds());
     assert.strictEqual(events.length, 0);
   });
 
   test('getEvents - with configured namespace', async function (assert) {
     assert.expect(2);
-    const iliosConfigMock = Service.extend({
-      apiNameSpace: 'geflarknik',
-    });
-    this.owner.register('service:iliosConfig', iliosConfigMock);
-    const from = moment('20150305', 'YYYYMMDD').hour(0);
-    const to = from.clone().hour(24);
+    class IliosConfigMock extends Service {
+      apiNameSpace = 'geflarknik';
+    }
+    this.owner.register('service:iliosConfig', IliosConfigMock);
+    const from = DateTime.fromISO('2015-03-05');
+    const to = from.plus({ hour: 24 });
     this.server.get(`/geflarknik/userevents/:id`, (scheme, { params }) => {
       assert.strictEqual(parseInt(params.id, 10), 1);
       return { userEvents: [] };
     });
     const subject = this.owner.lookup('service:user-events');
 
-    const events = await subject.getEvents(from.unix(), to.unix());
+    const events = await subject.getEvents(from.toSeconds(), to.toSeconds());
     assert.strictEqual(events.length, 0);
   });
 
@@ -119,15 +119,15 @@ module('Integration | Service | user events', function (hooks) {
       postrequisites: [],
     };
 
-    const from = moment('20110421', 'YYYYMMDD').hour(0);
-    const to = from.clone().hour(24);
+    const from = DateTime.fromISO('2011-04-21');
+    const to = from.plus({ hour: 24 });
     this.server.get(`/api/userevents/:id`, (scheme, { params }) => {
       assert.strictEqual(parseInt(params.id, 10), 1);
       return { userEvents: [event1, event2] };
     });
 
     const subject = this.owner.lookup('service:user-events');
-    const events = await subject.getEvents(from.unix(), to.unix());
+    const events = await subject.getEvents(from.toSeconds(), to.toSeconds());
     assert.strictEqual(events.length, 2);
     assert.strictEqual(events[0].name, event2.name);
     assert.strictEqual(events[1].name, event1.name);
@@ -150,10 +150,10 @@ module('Integration | Service | user events', function (hooks) {
 
     this.server.get(`/api/userevents/:id`, (scheme, { params, queryParams }) => {
       assert.strictEqual(parseInt(params.id, 10), 1);
-      const from = moment('20130121', 'YYYYMMDD').hour(0);
-      const to = from.clone().hour(24);
-      assert.strictEqual(parseInt(queryParams.from, 10), from.unix());
-      assert.strictEqual(parseInt(queryParams.to, 10), to.unix());
+      const from = DateTime.fromISO('2013-01-21');
+      const to = from.plus({ hour: 24 });
+      assert.strictEqual(parseInt(queryParams.from, 10), from.toSeconds());
+      assert.strictEqual(parseInt(queryParams.to, 10), to.toSeconds());
 
       return { userEvents: [event1, event2] };
     });
@@ -180,10 +180,10 @@ module('Integration | Service | user events', function (hooks) {
 
     this.server.get(`/api/userevents/:id`, (scheme, { params, queryParams }) => {
       assert.strictEqual(parseInt(params.id, 10), 1);
-      const from = moment('20130121', 'YYYYMMDD').hour(0);
-      const to = from.clone().hour(24);
-      assert.strictEqual(parseInt(queryParams.from, 10), from.unix());
-      assert.strictEqual(parseInt(queryParams.to, 10), to.unix());
+      const from = DateTime.fromISO('2013-01-21');
+      const to = from.plus({ hour: 24 });
+      assert.strictEqual(parseInt(queryParams.from, 10), from.toSeconds());
+      assert.strictEqual(parseInt(queryParams.to, 10), to.toSeconds());
       return { userEvents: [event1, event2] };
     });
 
