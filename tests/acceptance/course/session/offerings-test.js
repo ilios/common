@@ -1,9 +1,9 @@
-import moment from 'moment';
 import { module, test } from 'qunit';
 import { setupAuthentication } from 'ilios-common';
 import { setupApplicationTest } from 'ember-qunit';
 import { setupMirage } from 'ember-cli-mirage/test-support';
 import page from 'ilios-common/page-objects/session';
+import { DateTime } from 'luxon';
 
 module('Acceptance | Session - Offerings', function (hooks) {
   setupApplicationTest(hooks);
@@ -46,14 +46,14 @@ module('Acceptance | Session - Offerings', function (hooks) {
     });
     const session = this.server.create('session', { course });
 
-    this.today = moment().hour(9);
+    this.today = DateTime.local().set({ hours: 9 });
     this.offering1 = this.server.create('offering', {
       session,
       instructors: [users[4], users[5], users[6], users[7]],
       instructorGroups: [instructorGroup1, instructorGroup2],
       learnerGroups: [learnerGroup1, learnerGroup2],
-      startDate: this.today.format(),
-      endDate: this.today.clone().add(1, 'hour').format(),
+      startDate: this.today.toJSDate(),
+      endDate: this.today.plus({ hours: 1 }).toJSDate(),
       url: 'https://ucsf.edu/',
     });
 
@@ -62,16 +62,16 @@ module('Acceptance | Session - Offerings', function (hooks) {
       instructors: [users[6], users[7]],
       instructorGroups: [instructorGroup2],
       learnerGroups: [learnerGroup2],
-      startDate: this.today.clone().add(1, 'day').format(),
-      endDate: this.today.clone().add(1, 'day').add(1, 'hour').format(),
+      startDate: this.today.plus({ days: 1 }).toJSDate(),
+      endDate: this.today.plus({ days: 1, hours: 1 }).toJSDate(),
     });
     this.offering3 = this.server.create('offering', {
       session,
       instructorGroups: [instructorGroup2],
       learnerGroups: [learnerGroup2],
       instructors: [],
-      startDate: this.today.clone().add(2, 'days').format(),
-      endDate: this.today.clone().add(3, 'days').add(1, 'hour').format(),
+      startDate: this.today.plus({ days: 2 }).toJSDate(),
+      endDate: this.today.plus({ days: 3, hours: 1 }).toJSDate(),
       url: 'https://example.edu/',
     });
   });
@@ -92,40 +92,63 @@ module('Acceptance | Session - Offerings', function (hooks) {
     assert.ok(blocks[0].hasStartTime);
     assert.ok(blocks[0].hasEndTime);
     assert.notOk(blocks[0].hasMultiDay);
-    assert.strictEqual(blocks[0].dayOfWeek, moment(this.offering1.startDate).format('dddd'));
-    assert.strictEqual(blocks[0].dayOfMonth, moment(this.offering1.startDate).format('MMMM Do'));
+    assert.strictEqual(
+      blocks[0].dayOfWeek,
+      DateTime.fromJSDate(this.offering1.startDate).weekdayLong
+    );
+    assert.strictEqual(
+      blocks[0].dayOfMonth,
+      DateTime.fromJSDate(this.offering1.startDate).toFormat('MMMM d')
+    );
     assert.strictEqual(
       blocks[0].startTime,
-      'Starts: ' + moment(this.offering1.startDate).format('LT')
+      'Starts: ' + DateTime.fromJSDate(this.offering1.startDate).toFormat('t')
     );
-    assert.strictEqual(blocks[0].endTime, 'Ends: ' + moment(this.offering1.endDate).format('LT'));
+    assert.strictEqual(
+      blocks[0].endTime,
+      'Ends: ' + DateTime.fromJSDate(this.offering1.endDate).toFormat('t')
+    );
     assert.strictEqual(blocks[0].offerings.length, 1);
 
     assert.ok(blocks[1].hasStartTime);
     assert.ok(blocks[1].hasEndTime);
     assert.notOk(blocks[1].hasMultiDay);
-    assert.strictEqual(blocks[1].dayOfWeek, moment(this.offering2.startDate).format('dddd'));
-    assert.strictEqual(blocks[1].dayOfMonth, moment(this.offering2.startDate).format('MMMM Do'));
+    assert.strictEqual(
+      blocks[1].dayOfWeek,
+      DateTime.fromJSDate(this.offering2.startDate).weekdayLong
+    );
+    assert.strictEqual(
+      blocks[1].dayOfMonth,
+      DateTime.fromJSDate(this.offering2.startDate).toFormat('MMMM d')
+    );
     assert.strictEqual(
       blocks[1].startTime,
-      'Starts: ' + moment(this.offering2.startDate).format('LT')
+      'Starts: ' + DateTime.fromJSDate(this.offering2.startDate).toFormat('t')
     );
-    assert.strictEqual(blocks[1].endTime, 'Ends: ' + moment(this.offering2.endDate).format('LT'));
+    assert.strictEqual(
+      blocks[1].endTime,
+      'Ends: ' + DateTime.fromJSDate(this.offering2.endDate).toFormat('t')
+    );
     assert.strictEqual(blocks[1].offerings.length, 1);
 
     assert.notOk(blocks[2].hasStartTime);
     assert.notOk(blocks[2].hasEndTime);
     assert.ok(blocks[2].hasMultiDay);
-    assert.strictEqual(blocks[2].dayOfWeek, moment(this.offering3.startDate).format('dddd'));
-    assert.strictEqual(blocks[2].dayOfMonth, moment(this.offering3.startDate).format('MMMM Do'));
+    assert.strictEqual(
+      blocks[2].dayOfWeek,
+      DateTime.fromJSDate(this.offering3.startDate).weekdayLong
+    );
+    assert.strictEqual(
+      blocks[2].dayOfMonth,
+      DateTime.fromJSDate(this.offering3.startDate).toFormat('MMMM d')
+    );
     const expectedText =
       'Multiday ' +
       'Starts ' +
-      moment(this.offering3.startDate).format('dddd MMMM Do [@] LT') +
+      DateTime.fromJSDate(this.offering3.startDate).toFormat('EEEE MMMM d @ t') +
       ' Ends ' +
-      moment(this.offering3.endDate).format('dddd MMMM Do [@] LT');
+      DateTime.fromJSDate(this.offering3.endDate).toFormat('EEEE MMMM d @ t');
     assert.strictEqual(blocks[2].offerings.length, 1);
-
     assert.strictEqual(blocks[2].multiDay, expectedText);
   });
 
@@ -265,7 +288,7 @@ module('Acceptance | Session - Offerings', function (hooks) {
     assert.ok(block.hasEndTime);
     assert.notOk(block.hasMultiDay);
     assert.strictEqual(block.dayOfWeek, 'Sunday');
-    assert.strictEqual(block.dayOfMonth, 'September 11th');
+    assert.strictEqual(block.dayOfMonth, 'September 11');
     assert.strictEqual(block.startTime, 'Starts: 2:15 AM');
     assert.strictEqual(block.endTime, 'Ends: 5:30 PM');
     assert.strictEqual(block.offerings.length, 1);
@@ -305,11 +328,9 @@ module('Acceptance | Session - Offerings', function (hooks) {
     assert.notOk(block.hasEndTime);
     assert.ok(block.hasMultiDay);
     assert.strictEqual(block.dayOfWeek, 'Sunday');
-    assert.strictEqual(block.dayOfMonth, 'September 11th');
+    assert.strictEqual(block.dayOfMonth, 'September 11');
     const expectedText =
-      'Multiday ' +
-      'Starts Sunday September 11th @ 2:15 AM' +
-      ' Ends Monday September 12th @ 5:30 PM';
+      'Multiday ' + 'Starts Sunday September 11 @ 2:15 AM' + ' Ends Monday September 12 @ 5:30 PM';
     assert.strictEqual(block.multiDay, expectedText);
     assert.strictEqual(block.offerings.length, 1);
 
@@ -346,7 +367,7 @@ module('Acceptance | Session - Offerings', function (hooks) {
     assert.ok(block.hasEndTime);
     assert.notOk(block.hasMultiDay);
     assert.strictEqual(block.dayOfWeek, 'Sunday');
-    assert.strictEqual(block.dayOfMonth, 'September 11th');
+    assert.strictEqual(block.dayOfMonth, 'September 11');
     assert.strictEqual(block.startTime, 'Starts: 2:15 AM');
     assert.strictEqual(block.endTime, 'Ends: 5:30 PM');
     assert.strictEqual(block.offerings.length, 2);
@@ -397,7 +418,7 @@ module('Acceptance | Session - Offerings', function (hooks) {
     assert.ok(block.hasEndTime);
     assert.notOk(block.hasMultiDay);
     assert.strictEqual(block.dayOfWeek, 'Wednesday');
-    assert.strictEqual(block.dayOfMonth, 'October 5th');
+    assert.strictEqual(block.dayOfMonth, 'October 5');
     assert.strictEqual(block.startTime, 'Starts: 11:45 AM');
     assert.strictEqual(block.endTime, 'Ends: 5:55 PM');
     assert.strictEqual(block.offerings.length, 1);
@@ -440,10 +461,10 @@ module('Acceptance | Session - Offerings', function (hooks) {
     await form.save();
 
     assert.strictEqual(page.details.offerings.dateBlocks.length, 7);
-    assert.strictEqual(page.details.offerings.dateBlocks[0].dayOfMonth, 'May 22nd');
-    assert.strictEqual(page.details.offerings.dateBlocks[1].dayOfMonth, 'May 29th');
-    assert.strictEqual(page.details.offerings.dateBlocks[2].dayOfMonth, 'June 5th');
-    assert.strictEqual(page.details.offerings.dateBlocks[3].dayOfMonth, 'June 12th');
+    assert.strictEqual(page.details.offerings.dateBlocks[0].dayOfMonth, 'May 22');
+    assert.strictEqual(page.details.offerings.dateBlocks[1].dayOfMonth, 'May 29');
+    assert.strictEqual(page.details.offerings.dateBlocks[2].dayOfMonth, 'June 5');
+    assert.strictEqual(page.details.offerings.dateBlocks[3].dayOfMonth, 'June 12');
 
     for (let i = 0; i < 4; i++) {
       const block = page.details.offerings.dateBlocks[i];
@@ -511,10 +532,10 @@ module('Acceptance | Session - Offerings', function (hooks) {
     await form.save();
 
     assert.strictEqual(page.details.offerings.dateBlocks.length, 7);
-    assert.strictEqual(page.details.offerings.dateBlocks[0].dayOfMonth, 'May 22nd');
-    assert.strictEqual(page.details.offerings.dateBlocks[1].dayOfMonth, 'May 29th');
-    assert.strictEqual(page.details.offerings.dateBlocks[2].dayOfMonth, 'June 5th');
-    assert.strictEqual(page.details.offerings.dateBlocks[3].dayOfMonth, 'June 12th');
+    assert.strictEqual(page.details.offerings.dateBlocks[0].dayOfMonth, 'May 22');
+    assert.strictEqual(page.details.offerings.dateBlocks[1].dayOfMonth, 'May 29');
+    assert.strictEqual(page.details.offerings.dateBlocks[2].dayOfMonth, 'June 5');
+    assert.strictEqual(page.details.offerings.dateBlocks[3].dayOfMonth, 'June 12');
 
     for (let i = 0; i < 4; i++) {
       const block = page.details.offerings.dateBlocks[i];

@@ -1,5 +1,5 @@
 import EmberObject, { computed } from '@ember/object';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 
 const { sort } = computed;
 
@@ -24,13 +24,13 @@ const OfferingDateBlock = OfferingBlock.extend({
     return new Date(date.setDate(dayOfYear));
   }),
   dateStamp: computed('date', function () {
-    return moment(this.date).format('X');
+    return DateTime.fromJSDate(this.date).toFormat('X');
   }),
   dayOfWeek: computed('date', function () {
-    return moment(this.date).format('dddd');
+    return DateTime.fromJSDate(this.date).toFormat('cccc');
   }),
   dayOfMonth: computed('date', function () {
-    return moment(this.date).format('MMMM Do');
+    return DateTime.fromJSDate(this.date).toFormat('MMMM d');
   }),
   offeringTimeBlocks: computed('offerings.@each.{startDate,endDate}', function () {
     const offeringGroups = {};
@@ -61,28 +61,28 @@ const OfferingTimeBlock = OfferingBlock.extend({
   },
   timeKey: null,
   isMultiDay: computed('startDate', 'endDate', function () {
-    return this.startDate.format('DDDDYYYY') !== this.endDate.format('DDDDYYYY');
+    return this.startDate.toFormat('oooyyyy') !== this.endDate.toFormat('oooyyyy');
   }),
   //pull our times out of the key
   startDate: computed('timeKey', function () {
     const key = this.timeKey.substring(0, 11);
-    return moment(key, 'YYYYDDDHHmm');
+    return DateTime.fromFormat(key, 'yyyyoHHmm');
   }),
   endDate: computed('timeKey', function () {
     const key = this.timeKey.substring(11);
-    return moment(key, 'YYYYDDDHHmm');
+    return DateTime.fromFormat(key, 'yyyyoHHmm');
   }),
   startTime: computed('startDate', function () {
-    return moment(this.startDate).format('LT');
+    return this.startDate.toFormat('t');
   }),
   endTime: computed('endDate', function () {
-    return moment(this.endDate).format('LT');
+    return this.endDate.toFormat('t');
   }),
   longStartText: computed('startDate', function () {
-    return moment(this.startDate).format('dddd MMMM Do [@] LT');
+    return this.startDate.toFormat('EEEE MMMM d @ t');
   }),
   longEndText: computed('endDate', function () {
-    return moment(this.endDate).format('dddd MMMM Do [@] LT');
+    return this.endDate.toFormat('EEEE MMMM d @ t');
   }),
   sortOfferingsBy: null,
   sortedOfferings: sort('offerings', 'sortOfferingsBy'),
@@ -93,11 +93,8 @@ const OfferingTimeBlock = OfferingBlock.extend({
     return this.totalMinutes % 60;
   }),
   totalMinutes: computed('startDate', 'endDate', function () {
-    const startDate = this.startDate;
-    const endDate = this.endDate;
-    const diff = endDate.diff(startDate);
-    const duration = moment.duration(diff).as('minutes');
-    return duration;
+    const duration = this.endDate.diff(this.startDate);
+    return duration.get('minutes');
   }),
 });
 
