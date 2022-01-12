@@ -1,6 +1,6 @@
 import { inject as service } from '@ember/service';
 import Component from '@glimmer/component';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { tracked } from '@glimmer/tracking';
 import { restartableTask } from 'ember-concurrency';
 import scrollIntoView from 'scroll-into-view';
@@ -17,23 +17,22 @@ export default class WeeklyGlance extends Component {
   *load(element, [week, year]) {
     // @todo does this still hold true? verify. [ST 2019/12/04]
     this.intl; //we need to use the service so the CP will re-fire
-    const thursdayOfTheWeek = moment();
-    thursdayOfTheWeek.year(year);
-    thursdayOfTheWeek.day(4);
-    thursdayOfTheWeek.isoWeek(week);
-    thursdayOfTheWeek.hour(0).minute(0).second(0);
-
-    this.midnightAtTheStartOfThisWeek = thursdayOfTheWeek.clone().subtract(4, 'days');
+    const thursdayOfTheWeek = DateTime.local()
+      .set({
+        weekday: 4,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+      })
+      .set({ weekYear: year, weekNumber: week });
+    this.midnightAtTheStartOfThisWeek = thursdayOfTheWeek.startOf('week');
     this.midnightAtTheEndOfThisWeek = thursdayOfTheWeek
-      .clone()
-      .add(2, 'days')
-      .hour(23)
-      .minute(59)
-      .second(59);
+      .endOf('week')
+      .set({ hours: 23, minutes: 59, seconds: 59 });
 
     const weekEvents = yield this.userEvents.getEvents(
-      this.midnightAtTheStartOfThisWeek.unix(),
-      this.midnightAtTheEndOfThisWeek.unix()
+      Math.floor(this.midnightAtTheStartOfThisWeek.toSeconds()),
+      Math.floor(this.midnightAtTheEndOfThisWeek.toSeconds())
     );
     this.publishedWeekEvents = weekEvents.filter((ev) => {
       return !ev.isBlanked && ev.isPublished && !ev.isScheduled;
@@ -49,13 +48,13 @@ export default class WeeklyGlance extends Component {
       return '';
     }
 
-    const from = this.midnightAtTheStartOfThisWeek.format('MMMM D');
+    const from = this.midnightAtTheStartOfThisWeek.toFormat('LLLL d');
     let to;
-    if (this.midnightAtTheStartOfThisWeek.month() !== this.midnightAtTheEndOfThisWeek.month()) {
-      to = this.midnightAtTheEndOfThisWeek.format('MMMM D');
+    if (this.midnightAtTheStartOfThisWeek.month !== this.midnightAtTheEndOfThisWeek.month) {
+      to = this.midnightAtTheEndOfThisWeek.toFormat('LLLL d');
       return `${from} - ${to}`;
     }
-    to = this.midnightAtTheEndOfThisWeek.format('D');
+    to = this.midnightAtTheEndOfThisWeek.toFormat('d');
     return `${from}-${to}`;
   }
 

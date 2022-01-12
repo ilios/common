@@ -12,21 +12,21 @@ module('Integration | Component | ilios calendar week', function (hooks) {
 
   test('it renders', async function (assert) {
     assert.expect(2);
-    const date = new Date('2015-09-30T12:00:00');
+    const date = '2015-09-30T12:00:00';
     this.set('date', date);
 
     await render(hbs`<IliosCalendarWeek @date={{this.date}} @calendarEvents={{(array)}} />`);
-    assert.dom().containsText('Week of September 27, 2015');
+    assert.dom().containsText('Week of September 28, 2015');
     assert.strictEqual(weeklyCalendarComponent.events.length, 0);
   });
 
   test('clicking on a day header fires the correct events', async function (assert) {
     assert.expect(3);
-    const date = new Date('2015-09-30T12:00:00');
+    const date = '2015-09-30T12:00:00';
     this.set('date', date);
     this.set('changeDate', (newDate) => {
       assert.ok(newDate instanceof Date);
-      assert.strictEqual(newDate.toString().search(/Sun Sep 27/), 0);
+      assert.strictEqual(newDate.toString().search(/Mon Sep 28/), 0);
     });
     this.set('changeView', (newView) => {
       assert.strictEqual(newView, 'day');
@@ -44,7 +44,7 @@ module('Integration | Component | ilios calendar week', function (hooks) {
 
   test('clicking on a day header does nothing when areDaysSelectable is false', async function (assert) {
     assert.expect(0);
-    const date = new Date('2015-09-30T12:00:00');
+    const date = '2015-09-30T12:00:00';
     this.set('date', date);
 
     await render(hbs`<IliosCalendarWeek
@@ -131,7 +131,7 @@ module('Integration | Component | ilios calendar week', function (hooks) {
         isBlanked: false,
       },
     ];
-    this.set('date', date.toJSDate());
+    this.set('date', date.toISO());
     this.set('events', [event]);
     await render(hbs`<IliosCalendarWeek
       @date={{this.date}}
@@ -186,7 +186,7 @@ module('Integration | Component | ilios calendar week', function (hooks) {
       event.prerequisites = [publishedPrework];
     });
 
-    this.set('date', date.toJSDate());
+    this.set('date', date.toISO());
     this.set('events', events);
     await render(hbs`<IliosCalendarWeek
       @date={{this.date}}
@@ -209,7 +209,7 @@ module('Integration | Component | ilios calendar week', function (hooks) {
       endDate: null,
       calendarColor: '#32edfc',
       location: 'Rm. 160',
-      lastModified: new Date(),
+      lastModified: DateTime.local().toISO(),
       isPublished: true,
       isScheduled: false,
       isBlanked: false,

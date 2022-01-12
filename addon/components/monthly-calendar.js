@@ -1,5 +1,5 @@
 import Component from '@glimmer/component';
-import moment from 'moment';
+import { DateTime, Info } from 'luxon';
 import { inject as service } from '@ember/service';
 
 export default class MonthlyCalendarComponent extends Component {
@@ -15,21 +15,21 @@ export default class MonthlyCalendarComponent extends Component {
   }
 
   get firstDayOfMonth() {
-    return moment(this.args.date).startOf('month');
+    return DateTime.fromISO(this.args.date).startOf('month').toJSDate();
   }
 
   get month() {
-    const date = this.firstDayOfMonth;
-    const lastDayOfMonth = moment(this.args.date).endOf('month');
+    let date = DateTime.fromJSDate(this.firstDayOfMonth);
+    const lastDayOfMonth = date.endOf('month');
     const days = [];
 
-    while (date.isBefore(lastDayOfMonth)) {
+    while (date <= lastDayOfMonth) {
       const day = {
-        date: date.toDate(),
-        dayOfMonth: date.date(),
+        date: date.toJSDate(),
+        dayOfMonth: date.day,
       };
       days.push(day);
-      date.add(1, 'day');
+      date = date.plus({ days: 1 });
     }
 
     return days;
@@ -38,7 +38,7 @@ export default class MonthlyCalendarComponent extends Component {
   get eventDays() {
     return this.month.map((day) => {
       day.events = this.sortedEvents.filter((e) =>
-        moment(day.date).isSame(moment(e.startDate), 'day')
+        DateTime.fromJSDate(day.date).hasSame(DateTime.fromISO(e.startDate), 'day')
       );
       return day;
     });
@@ -46,34 +46,33 @@ export default class MonthlyCalendarComponent extends Component {
 
   get days() {
     //access the locale info here so the getter will recompute when it changes
-    this.moment.locale;
     this.intl.locale;
 
-    const firstDayOfWeek = this.firstDayOfMonth.clone().weekday(0);
-    const offset = this.firstDayOfMonth.diff(firstDayOfWeek, 'days');
+    const firstDayOfWeek = DateTime.fromJSDate(this.firstDayOfMonth).startOf('week');
+    const offset = DateTime.fromJSDate(this.firstDayOfMonth)
+      .diff(firstDayOfWeek, 'days')
+      .toObject().days;
 
     return this.eventDays.map((day) => {
-      const date = moment(day.date);
-      day.dayOfWeek = date.weekday() + 1;
-      day.weekOfMonth = Math.ceil((date.date() + offset) / 7);
-      day.name = date.format('dddd LL');
-
+      const date = DateTime.fromJSDate(day.date);
+      day.dayOfWeek = date.weekday;
+      day.weekOfMonth = Math.ceil((date.day + offset) / 7);
+      day.name = date.toFormat('cccc DDD');
       return day;
     });
   }
 
   get dayNames() {
     //access the locale info here so the getter will recompute when it changes
-    this.moment.locale;
     this.intl.locale;
-    const longDays = moment.weekdays(true);
-    const shortDays = moment.weekdaysShort(true);
 
+    const longNames = Info.weekdays('long');
+    const shortNames = Info.weekdays('short');
     return [0, 1, 2, 3, 4, 5, 6].map((i) => {
       return {
         day: i + 1,
-        longName: longDays[i],
-        shortName: shortDays[i],
+        longName: longNames[i],
+        shortName: shortNames[i],
       };
     });
   }

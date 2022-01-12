@@ -41,8 +41,8 @@ module('Integration | Component | offering-calendar', function (hooks) {
     const learnerGroupModel = await this.owner
       .lookup('service:store')
       .find('learner-group', learnerGroup.id);
-    this.set('startDate', today.toJSDate());
-    this.set('endDate', tomorrow.toJSDate());
+    this.set('startDate', today.toISO());
+    this.set('endDate', tomorrow.toISO());
     this.set('session', sessionModel);
     this.set('learnerGroups', [learnerGroupModel]);
     await render(hbs`<OfferingCalendar

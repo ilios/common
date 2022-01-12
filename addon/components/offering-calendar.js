@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { restartableTask } from 'ember-concurrency';
 import { map } from 'rsvp';
+import { DateTime } from 'luxon';
 
 export default class OfferingCalendar extends Component {
   @tracked showLearnerGroupEvents = true;
@@ -45,8 +46,8 @@ export default class OfferingCalendar extends Component {
           const session = await offering.session;
           const course = await session.course;
           return {
-            startDate: offering.startDate,
-            endDate: offering.endDate,
+            startDate: DateTime.fromJSDate(offering.startDate).toISO(),
+            endDate: DateTime.fromJSDate(offering.endDate).toISO(),
             courseTitle: course.title,
             name: session.title,
             offering: offering.id,
@@ -72,8 +73,8 @@ export default class OfferingCalendar extends Component {
       const course = yield session.course;
       this.sessionEvents = yield map(offerings.toArray(), async (offering) => {
         return {
-          startDate: offering.startDate,
-          endDate: offering.endDate,
+          startDate: DateTime.fromJSDate(offering.startDate).toISO(),
+          endDate: DateTime.fromJSDate(offering.endDate).toISO(),
           courseTitle: course.title,
           name: session.title,
           offering: offering.id,
@@ -83,7 +84,6 @@ export default class OfferingCalendar extends Component {
           prerequisites: [],
         };
       });
-
       this.currentEvent = {
         startDate,
         endDate,

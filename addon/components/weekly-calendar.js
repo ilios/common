@@ -2,11 +2,10 @@ import Component from '@glimmer/component';
 import { inject as service } from '@ember/service';
 import { restartableTask, timeout } from 'ember-concurrency';
 import { action, set } from '@ember/object';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 
 export default class WeeklyCalendarComponent extends Component {
   @service intl;
-  @service moment;
 
   @restartableTask
   *scrollView(calendarElement, [earliestHour]) {
@@ -22,19 +21,19 @@ export default class WeeklyCalendarComponent extends Component {
   }
 
   get firstDayOfWeek() {
-    this.intl.locale; //access to start autotracking
-    return this.moment.moment(this.args.date).startOf('week');
+    this.intl.locale;
+    return DateTime.fromISO(this.args.date).startOf('week').toJSDate();
   }
 
   get lastDayOfWeek() {
-    return this.firstDayOfWeek.endOf('week');
+    return DateTime.fromJSDate(this.firstDayOfWeek).endOf('week').toJSDate();
   }
 
   get week() {
     return [...Array(7).keys()].map((i) => {
-      const date = this.firstDayOfWeek.add(i, 'days');
+      const date = DateTime.fromJSDate(this.firstDayOfWeek).plus({ days: i });
       return {
-        date: date.toDate(),
+        date: date.toJSDate(),
         dayOfWeek: i + 1,
       };
     });
@@ -46,7 +45,7 @@ export default class WeeklyCalendarComponent extends Component {
     }
 
     return this.sortedEvents.reduce((earliestHour, event) => {
-      const hour = Number(moment(event.startDate).format('H'));
+      const hour = DateTime.fromISO(event.startDate).hour;
       return hour < earliestHour ? hour : earliestHour;
     }, 24);
   }
@@ -62,7 +61,7 @@ export default class WeeklyCalendarComponent extends Component {
   get eventDays() {
     return this.week.map((day) => {
       day.events = this.sortedEvents.filter((e) =>
-        moment(day.date).isSame(moment(e.startDate), 'day')
+        DateTime.fromJSDate(day.date).hasSame(DateTime.fromISO(e.startDate), 'day')
       );
       return day;
     });
@@ -70,21 +69,20 @@ export default class WeeklyCalendarComponent extends Component {
 
   get days() {
     return this.eventDays.map((day) => {
-      const date = moment(day.date);
-      day.dayOfWeek = date.weekday() + 1;
-      day.fullName = date.format('dddd LL');
-
+      const date = DateTime.fromJSDate(day.date);
+      day.dayOfWeek = date.weekday;
+      day.fullName = date.toFormat('cccc DDD');
       return day;
     });
   }
 
   get hours() {
     return [...Array(24).keys()].map((i) => {
-      const time = this.firstDayOfWeek.hour(i);
+      const time = DateTime.fromJSDate(this.firstDayOfWeek).set({ hours: i });
       return {
-        hour: time.format('H'),
-        longName: time.format('LT'),
-        shortName: time.format('hA'),
+        hour: time.toFormat('H'),
+        longName: time.toFormat('t'),
+        shortName: time.toFormat('ha'),
       };
     });
   }
