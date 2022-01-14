@@ -34,19 +34,19 @@ jobs:
     - name: test
       run: npm run test:ember
 
-  test-floating:
-    name: Floating Dependencies
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-      with:
-        node-version: 14
-    - name: install dependencies
-      run: npm install --no-package-lock
-    - name: test
-      run: npm run test:ember
+#  test-floating:
+#    name: Floating Dependencies
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#    - uses: actions/checkout@v2
+#    - uses: actions/setup-node@v1
+#      with:
+#        node-version: 14
+#    - name: install dependencies
+#      run: npm install --no-package-lock
+#    - name: test
+#      run: npm run test:ember
 
   test-embroider:
     name: ember-try
