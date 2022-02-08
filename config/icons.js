@@ -4,6 +4,7 @@ module.exports = function () {
     'free-solid-svg-icons': [
       'angle-double-down',
       'angle-double-left',
+      'arrow-right-to-bracket',
       'arrows-alt',
       'backward',
       'ban',
@@ -53,7 +54,6 @@ module.exports = function () {
       'print',
       'random',
       'rss-square',
-      'sign-in-alt',
       'sort',
       'sort-alpha-down',
       'sort-alpha-down-alt',
