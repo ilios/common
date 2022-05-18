@@ -1,8 +1,6 @@
 <div
   class="course-objective-list"
   data-test-course-objective-list
-  {{did-insert (perform this.load)}}
-  {{did-update (perform this.load) @course}}
 >
   {{#if (and (is-array this.courseObjectives) this.isSorting)}}
     <ObjectiveSortManager

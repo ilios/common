@@ -7,7 +7,6 @@ export default class SessionRoute extends Route {
 
   async model(params) {
     const course = this.modelFor('course');
-    await this.dataLoader.loadCourseSessions(course.id);
     const sessions = await course.sessions;
     return sessions.findBy('id', params.session_id);
   }

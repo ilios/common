@@ -1,36 +1,49 @@
 import Service from '@ember/service';
 import { inject as service } from '@ember/service';
+import { deprecate } from '@ember/debug';
 
 export default class DataLoaderService extends Service {
   @service store;
+
   #calendarSchools = {};
-  #coursesSchools = {};
   #learnerGroupSchools = null;
   #learnerGroupCohorts = {};
   #courses = {};
-  #courseSessions = {};
-  async loadSchoolForCalendar(id) {
+  async loadSchool(id) {
     if (!(id in this.#calendarSchools)) {
+      const relationships = [
+        'programs.programYears.cohort',
+        'sessionTypes',
+        'vocabularies.terms.children.children.children',
+        'courses',
+        'configurations',
+        'competencies',
+      ];
       this.#calendarSchools[id] = this.store.findRecord('school', id, {
-        include: 'programs.programYears.cohort,sessionTypes,vocabularies.terms,courses',
+        include: relationships.join(','),
         reload: true,
       });
     }
 
     return this.#calendarSchools[id];
   }
+  async loadSchoolForCalendar(id) {
+    deprecate('loadSchoolForCalendar called use loadSchool instead', false, {
+      id: 'common.data-loader.loadSchoolForCalendar',
+      for: 'ilios-common',
+      until: '68',
+      since: '67.1.0',
+    });
+    return this.loadSchool(id);
+  }
   async loadSchoolForCourses(id) {
-    // more comprehensive so if we already have it then use it.
-    if (id in this.#calendarSchools) {
-      return this.#calendarSchools[id];
-    }
-    if (!(id in this.#coursesSchools)) {
-      this.#coursesSchools[id] = this.store.findRecord('school', id, {
-        include: 'courses',
-        reload: true,
-      });
-    }
-    return this.#coursesSchools[id];
+    deprecate('loadSchoolForCourses called use loadSchool instead', false, {
+      id: 'common.data-loader.loadSchoolForCalendar',
+      for: 'ilios-common',
+      until: '68',
+      since: '67.1.0',
+    });
+    return this.loadSchool(id);
   }
   async loadSchoolsForLearnerGroups() {
     if (!this.#learnerGroupSchools) {
@@ -60,11 +73,8 @@ export default class DataLoaderService extends Service {
         'courseObjectives.terms.vocabulary',
         'learningMaterials.learningMaterial.owningUser',
         'directors',
-        'school.sessionTypes',
-        'school.configurations',
-        'school.competencies',
         'administrators',
-        'directors',
+        'studentAdvisors',
         'meshDescriptors.trees',
         'cohorts.programYear.program',
         'cohorts.programYear.programYearObjectives',
@@ -74,16 +84,7 @@ export default class DataLoaderService extends Service {
         'terms.vocabulary',
         'terms.parent.parent.parent',
       ];
-      const include = relationships.join(',');
-      this.#courses[id] = this.store.findRecord('course', id, {
-        include,
-        reload: true,
-      });
-    }
-    return this.#courses[id];
-  }
-  async loadCourseSessions(id) {
-    if (!(id in this.#courseSessions)) {
+      const courseInclude = relationships.join(',');
       const sessionRelationships = [
         'learningMaterials.learningMaterial.owningUser',
         'sessionObjectives.courseObjectives',
@@ -97,18 +98,28 @@ export default class DataLoaderService extends Service {
         'ilmSession.instructors',
         'ilmSession.instructorGroups.users',
         'ilmSession.learnerGroups.users',
-        'terms.vocabulary',
-        'terms.parent.parent.parent',
         'meshDescriptors.trees',
+        'administrators',
+        'studentAdvisors',
       ];
-      const sessionIncludes = sessionRelationships.reduce((includes, item) => {
+      const sessionInclude = sessionRelationships.reduce((includes, item) => {
         return `${includes}sessions.${item},`;
       }, '');
-      this.#courseSessions[id] = this.store.findRecord('course', id, {
-        include: sessionIncludes,
+
+      this.#courses[id] = this.store.findRecord('course', id, {
+        include: `${courseInclude},${sessionInclude}`,
         reload: true,
       });
     }
-    return this.#courseSessions[id];
+    return this.#courses[id];
+  }
+  async loadCourseSessions(id) {
+    deprecate('loadCourseSessions called use loadCourse instead', false, {
+      id: 'common.data-loader.loadCourseSessions',
+      for: 'ilios-common',
+      until: '68',
+      since: '67.1.0',
+    });
+    return this.loadCourse(id);
   }
 }

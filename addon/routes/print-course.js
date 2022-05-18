@@ -17,10 +17,7 @@ export default class PrintCourseRoute extends Route {
   async afterModel(course, transition) {
     this.canViewUnpublished = this.currentUser.performsNonLearnerFunction;
     if (this.canViewUnpublished || course.isPublishedOrScheduled) {
-      return await Promise.all([
-        this.dataLoader.loadCourse(course.id),
-        this.dataLoader.loadCourseSessions(course.id),
-      ]);
+      return await this.dataLoader.loadCourse(course.id);
     }
 
     transition.abort();

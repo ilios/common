@@ -71,7 +71,7 @@ export default class DashboardCalendarComponent extends Component {
     this.cohortProxies = null;
     this.sessionTypes = null;
     this.vocabularies = null;
-    yield this.dataLoader.loadSchoolForCalendar(school.id);
+    yield this.dataLoader.loadSchool(school.id);
     const promises = {
       cohortProxies: this.getCohortProxies(school),
       sessionTypes: this.getSessionTypes(school),

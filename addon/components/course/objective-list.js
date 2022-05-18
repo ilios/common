@@ -1,6 +1,5 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { restartableTask } from 'ember-concurrency';
 import { map } from 'rsvp';
 import { inject as service } from '@ember/service';
 import { use } from 'ember-could-get-used-to-this';
@@ -18,7 +17,7 @@ export default class CourseObjectiveListComponent extends Component {
   @use courseObjectivesAsync = new ResolveAsyncValue(() => [this.args.course.courseObjectives]);
 
   get courseObjectives() {
-    if (this.load.lastSuccessful && this.courseObjectivesAsync) {
+    if (this.courseObjectivesAsync) {
       return this.courseObjectivesAsync.toArray().sort(sortableByPosition);
     }
 
@@ -28,7 +27,7 @@ export default class CourseObjectiveListComponent extends Component {
   @use courseCohortsAsync = new ResolveAsyncValue(() => [this.args.course.cohorts]);
 
   get courseCohorts() {
-    if (this.load.lastSuccessful && this.courseCohortsAsync) {
+    if (this.courseCohortsAsync) {
       return this.courseCohortsAsync.toArray();
     }
 
@@ -42,9 +41,6 @@ export default class CourseObjectiveListComponent extends Component {
   ]);
 
   get cohortObjectives() {
-    if (!this.load.lastSuccessful) {
-      return null;
-    }
     return this?.cohortObjectiveAsync;
   }
 
@@ -54,12 +50,6 @@ export default class CourseObjectiveListComponent extends Component {
     }
 
     return this.args.course.hasMany('courseObjectives').ids().length;
-  }
-
-  @restartableTask
-  *load() {
-    //pre-load all session data as well to get access to child objectives
-    yield this.dataLoader.loadCourseSessions(this.args.course.id);
   }
 
   async getCohortObjectives(cohorts, intl) {

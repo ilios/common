@@ -88,7 +88,7 @@ export default class DashboardCoursesCalendarFilterComponent extends Component {
       'academicYearCrossesCalendarYearBoundaries'
     );
     if (this.args.school) {
-      yield this.dataLoader.loadSchoolForCalendar(this.args.school.id);
+      yield this.dataLoader.loadSchool(this.args.school.id);
       this.coursesRelationship = yield this.args.school.courses;
     }
   }

@@ -28,8 +28,13 @@ export default class CourseRoute extends Route {
     //pre load froala so it's available quickly when working in the course but don't actually wait for it
     loadFroalaEditor();
 
-    await this.preload(course.id);
-    this.editable = await this.permissionChecker.canUpdateCourse(course);
+    const preload = this.preload(course.id);
+    const arr = await Promise.all([
+      preload,
+      this.dataLoader.loadSchool(course.belongsTo('school').id()),
+      this.permissionChecker.canUpdateCourse(course),
+    ]);
+    this.editable = arr[2];
   }
 
   setupController(controller, model) {
