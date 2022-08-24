@@ -30,72 +30,66 @@ export default class SessionObjectiveListItemComponent extends Component {
     return this.isManagingParents || this.isManagingDescriptors || this.isManagingTerms;
   }
 
-  @dropTask
-  *saveTitleChanges() {
+  saveTitleChanges = dropTask(this, async () => {
     this.addErrorDisplayFor('title');
-    const isValid = yield this.isValid('title');
+    const isValid = await this.isValid('title');
     if (!isValid) {
       return false;
     }
     this.removeErrorDisplayFor('title');
     this.args.sessionObjective.set('title', this.title);
-    yield this.args.sessionObjective.save();
-  }
+    await this.args.sessionObjective.save();
+  });
 
-  @dropTask
-  *manageParents() {
-    const parents = yield this.args.sessionObjective.courseObjectives;
+  manageParents = dropTask(this, async () => {
+    const parents = await this.args.sessionObjective.courseObjectives;
     this.parentsBuffer = parents.toArray();
     this.isManagingParents = true;
-  }
-  @dropTask
-  *manageDescriptors() {
-    const meshDescriptors = yield this.args.sessionObjective.meshDescriptors;
+  });
+
+  manageDescriptors = dropTask(this, async () => {
+    const meshDescriptors = await this.args.sessionObjective.meshDescriptors;
     this.descriptorsBuffer = meshDescriptors.toArray();
     this.isManagingDescriptors = true;
-  }
-  @dropTask
-  *manageTerms(vocabulary) {
+  });
+
+  manageTerms = dropTask(this, async (vocabulary) => {
     this.selectedVocabulary = vocabulary;
-    const terms = yield this.args.sessionObjective.terms;
+    const terms = await this.args.sessionObjective.terms;
     this.termsBuffer = terms.toArray();
     this.isManagingTerms = true;
-  }
+  });
 
-  @restartableTask
-  *highlightSave() {
-    yield timeout(1000);
-  }
+  highlightSave = restartableTask(this, async () => {
+    await timeout(1000);
+  });
 
-  @dropTask
-  *saveParents() {
+  saveParents = dropTask(this, async () => {
     const newParents = this.parentsBuffer.map((obj) => {
       return this.store.peekRecord('course-objective', obj.id);
     });
     this.args.sessionObjective.set('courseObjectives', newParents);
-    yield this.args.sessionObjective.save();
+    await this.args.sessionObjective.save();
     this.parentsBuffer = [];
     this.isManagingParents = false;
     this.highlightSave.perform();
-  }
+  });
 
-  @dropTask
-  *saveDescriptors() {
+  saveDescriptors = dropTask(this, async () => {
     this.args.sessionObjective.set('meshDescriptors', this.descriptorsBuffer);
-    yield this.args.sessionObjective.save();
+    await this.args.sessionObjective.save();
     this.descriptorsBuffer = [];
     this.isManagingDescriptors = false;
     this.highlightSave.perform();
-  }
+  });
 
-  @dropTask
-  *saveTerms() {
+  saveTerms = dropTask(this, async () => {
     this.args.sessionObjective.set('terms', this.termsBuffer);
-    yield this.args.sessionObjective.save();
+    await this.args.sessionObjective.save();
     this.termsBuffer = [];
     this.isManagingTerms = false;
     this.highlightSave.perform();
-  }
+  });
 
   @action
   revertTitleChanges() {
@@ -142,8 +136,7 @@ export default class SessionObjectiveListItemComponent extends Component {
     this.selectedVocabulary = null;
   }
 
-  @dropTask
-  *deleteObjective() {
-    yield this.args.sessionObjective.destroyRecord();
-  }
+  deleteObjective = dropTask(this, async () => {
+    await this.args.sessionObjective.destroyRecord();
+  });
 }
