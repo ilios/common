@@ -110,7 +110,7 @@ export default class VisualizerCourseSessionType extends Component {
     return !!this.dataObjects;
   }
 
-  barHover = restartableTask(this, async (obj) => {
+  barHover = restartableTask(async (obj) => {
     await timeout(100);
     if (this.args.isIcon || isEmpty(obj) || obj.empty) {
       this.tooltipTitle = null;

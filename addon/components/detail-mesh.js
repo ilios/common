@@ -12,7 +12,7 @@ export default class DetailMeshComponent extends Component {
   @tracked bufferedDescriptors = null;
   @tracked meshDescriptorRelationship;
 
-  load = restartableTask(this, async () => {
+  load = restartableTask(async () => {
     this.meshDescriptorRelationship = await this.args.subject.meshDescriptors;
   });
 
@@ -42,7 +42,7 @@ export default class DetailMeshComponent extends Component {
     this.bufferedDescriptors = this.bufferedDescriptors.filter((obj) => obj.id !== descriptor.id);
   }
 
-  save = dropTask(this, async () => {
+  save = dropTask(async () => {
     this.args.subject.set('meshDescriptors', this.bufferedDescriptors);
     await this.args.subject.save();
     this.bufferedDescriptors = null;

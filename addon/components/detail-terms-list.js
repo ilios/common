@@ -6,7 +6,7 @@ import { all } from 'rsvp';
 export default class DetailTermsListComponent extends Component {
   @tracked sortedTerms;
 
-  load = dropTask(this, async (event, [terms]) => {
+  load = dropTask(async (event, [terms]) => {
     if (!terms) {
       this.sortedTerms = [];
       return;

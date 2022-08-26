@@ -13,14 +13,14 @@ export default class CourseHeaderComponent extends Component {
   @tracked isEditingTitle = false;
   @tracked academicYearCrossesCalendarYearBoundaries = false;
 
-  load = restartableTask(this, async () => {
+  load = restartableTask(async () => {
     this.academicYearCrossesCalendarYearBoundaries = await this.iliosConfig.itemFromConfig(
       'academicYearCrossesCalendarYearBoundaries'
     );
     this.revertTitleChanges();
   });
 
-  changeTitle = restartableTask(this, async () => {
+  changeTitle = restartableTask(async () => {
     this.courseTitle = this.courseTitle.trim();
     this.addErrorDisplayFor('courseTitle');
     const isValid = await this.isValid('courseTitle');

@@ -51,7 +51,7 @@ export default class UserSearch extends Component {
     }
   }
 
-  search = restartableTask(this, async (searchTerms = '') => {
+  search = restartableTask(async (searchTerms = '') => {
     this.showMoreInputPrompt = false;
     this.searchReturned = false;
     this.userResults = [];

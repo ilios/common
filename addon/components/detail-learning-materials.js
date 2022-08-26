@@ -29,7 +29,7 @@ export default class DetailCohortsComponent extends Component {
     this.learningMaterialUserRoles = this.store.peekAll('learning-material-user-role');
   }
 
-  load = restartableTask(this, async () => {
+  load = restartableTask(async () => {
     this.materialsRelationship = await this.args.subject.learningMaterials;
   });
 
@@ -98,7 +98,7 @@ export default class DetailCohortsComponent extends Component {
     });
   }
 
-  saveNewLearningMaterial = dropTask(this, async (lm) => {
+  saveNewLearningMaterial = dropTask(async (lm) => {
     const savedLm = await lm.save();
 
     let lmSubject;
@@ -126,7 +126,7 @@ export default class DetailCohortsComponent extends Component {
     });
   });
 
-  saveSortOrder = dropTask(this, async (learningMaterials) => {
+  saveSortOrder = dropTask(async (learningMaterials) => {
     const materialsToSave = [];
     for (let i = 0, n = learningMaterials.length; i < n; i++) {
       const lm = learningMaterials[i];
@@ -144,7 +144,7 @@ export default class DetailCohortsComponent extends Component {
     });
   });
 
-  addLearningMaterial = dropTask(this, async (parentLearningMaterial) => {
+  addLearningMaterial = dropTask(async (parentLearningMaterial) => {
     let newLearningMaterial;
 
     if (this.args.isCourse) {
@@ -168,7 +168,7 @@ export default class DetailCohortsComponent extends Component {
     await newLearningMaterial.save();
   });
 
-  remove = dropTask(this, async (lmProxy) => {
+  remove = dropTask(async (lmProxy) => {
     const subjectLearningMaterial = lmProxy.get('content');
     subjectLearningMaterial.deleteRecord();
     return await subjectLearningMaterial.save();

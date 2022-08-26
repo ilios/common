@@ -71,7 +71,7 @@ export default class TaxonomyManager extends Component {
     this.vocabId = event.target.value;
   }
 
-  setTermFilter = restartableTask(this, async (termFilter) => {
+  setTermFilter = restartableTask(async (termFilter) => {
     const clean = escapeRegExp(termFilter);
     if (isPresent(clean)) {
       await timeout(250);

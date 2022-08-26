@@ -34,7 +34,7 @@ export default class OfferingCalendar extends Component {
     return [...filteredEvents, this.currentEvent];
   }
 
-  load = restartableTask(this, async (element, [startDate, endDate, learnerGroups, session]) => {
+  load = restartableTask(async (element, [startDate, endDate, learnerGroups, session]) => {
     if (!learnerGroups) {
       this.learnerGroupEvents = [];
     } else {

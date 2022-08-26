@@ -6,7 +6,7 @@ import { restartableTask } from 'ember-concurrency';
 export default class DetailCompetenciesComponent extends Component {
   @tracked competenciesRelationship;
 
-  load = restartableTask(this, async () => {
+  load = restartableTask(async () => {
     this.competenciesRelationship = await this.args.course.competencies;
   });
 

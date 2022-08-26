@@ -147,7 +147,7 @@ export default class PublishAllSessionsComponent extends Component {
     }
   }
 
-  save = dropTask(this, async () => {
+  save = dropTask(async () => {
     const sessionsToSave = [];
 
     this.overridableSessions.forEach((session) => {

@@ -8,13 +8,13 @@ export default class DetailCohortsComponent extends Component {
   @tracked isManaging = false;
   @tracked bufferedCohorts = [];
 
-  manage = dropTask(this, async () => {
+  manage = dropTask(async () => {
     const cohorts = await this.args.course.cohorts;
     this.bufferedCohorts = [...cohorts.toArray()];
     this.isManaging = true;
   });
 
-  save = dropTask(this, async () => {
+  save = dropTask(async () => {
     const { course } = this.args;
     const cohortList = await course.cohorts;
     const removedCohorts = cohortList.filter((cohort) => {

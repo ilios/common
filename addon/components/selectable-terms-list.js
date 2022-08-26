@@ -10,7 +10,7 @@ export default class SelectableTermsList extends Component {
     return this.args.vocabulary ? this.args.vocabulary.getTopLevelTerms() : null;
   }
 
-  loadFilteredTerms = restartableTask(this, async () => {
+  loadFilteredTerms = restartableTask(async () => {
     let terms = [];
     if (this.topLevelTermsRelationshipPromise) {
       terms = (await this.topLevelTermsRelationshipPromise).toArray();

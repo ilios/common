@@ -14,7 +14,7 @@ export default class PrintCourseComponent extends Component {
   @tracked sessionsRelationship;
   @tracked academicYearCrossesCalendarYearBoundaries = false;
 
-  load = dropTask(this, async () => {
+  load = dropTask(async () => {
     this.courseLearningMaterialsRelationship = await this.args.course.learningMaterials;
     this.sessionsRelationship = await this.args.course.sessions;
     this.academicYearCrossesCalendarYearBoundaries = await this.iliosConfig.itemFromConfig(

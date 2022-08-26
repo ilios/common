@@ -37,7 +37,7 @@ export default class NewSessionComponent extends Component {
     return selectedSessionType;
   }
 
-  saveNewSession = dropTask(this, async () => {
+  saveNewSession = dropTask(async () => {
     this.addErrorDisplayFor('title');
     const isValid = await this.isValid();
     if (!isValid) {

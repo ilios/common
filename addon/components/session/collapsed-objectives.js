@@ -5,7 +5,7 @@ import { restartableTask } from 'ember-concurrency';
 export default class SessionCollapsedObjectivesComponent extends Component {
   @tracked objectivesRelationship;
 
-  load = restartableTask(this, async () => {
+  load = restartableTask(async () => {
     this.objectivesRelationship = await this.args.session.sessionObjectives;
   });
 

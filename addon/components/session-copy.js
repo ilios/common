@@ -16,7 +16,7 @@ export default class SessionCopyComponent extends Component {
   @tracked years;
   @tracked allCourses;
 
-  setup = restartableTask(this, async (element, [session]) => {
+  setup = restartableTask(async (element, [session]) => {
     if (!session) {
       return;
     }
@@ -78,7 +78,7 @@ export default class SessionCopyComponent extends Component {
     this.selectedCourseId = event.target.value;
   }
 
-  save = dropTask(this, async () => {
+  save = dropTask(async () => {
     await timeout(10);
     const sessionToCopy = this.args.session;
     const newCourse = this.bestSelectedCourse;

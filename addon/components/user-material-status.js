@@ -42,7 +42,7 @@ export default class UserMaterialStatusComponent extends Component {
     return this.materialStatus?.status || 0;
   }
 
-  setStatus = restartableTask(this, async (statusValue) => {
+  setStatus = restartableTask(async (statusValue) => {
     this.tmpStatus = statusValue;
     let materialStatus = this.materialStatus;
     if (!materialStatus) {

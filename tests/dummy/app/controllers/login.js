@@ -9,7 +9,7 @@ export default class LoginController extends Controller {
   @tracked jwt = null;
   @tracked error = null;
 
-  login = dropTask(this, async () => {
+  login = dropTask(async () => {
     this.error = null;
 
     if (this.jwt) {
@@ -28,7 +28,7 @@ export default class LoginController extends Controller {
     }
   });
 
-  loginOnEnter = dropTask(this, async (event) => {
+  loginOnEnter = dropTask(async (event) => {
     const keyCode = event.keyCode;
     if (13 === keyCode) {
       await this.login.perform();

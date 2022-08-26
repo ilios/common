@@ -151,12 +151,12 @@ export default class OfferingForm extends Component {
     return DEFAULT_URL_VALUE;
   }
 
-  load = restartableTask(this, async (element, [offering, cohorts]) => {
+  load = restartableTask(async (element, [offering, cohorts]) => {
     await this.loadData.perform(offering, cohorts);
     await timeout(1);
   });
 
-  loadData = restartableTask(this, async (offering, cohorts) => {
+  loadData = restartableTask(async (offering, cohorts) => {
     this.availableInstructorGroups = await this.loadAvailableInstructorGroups(cohorts);
 
     if (isPresent(offering)) {
@@ -328,7 +328,7 @@ export default class OfferingForm extends Component {
     this.loaded = true;
   }
 
-  loadAttrsFromOffering = dropTask(this, async (offering) => {
+  loadAttrsFromOffering = dropTask(async (offering) => {
     if (this.loaded) {
       return;
     }
@@ -350,14 +350,14 @@ export default class OfferingForm extends Component {
     this.loaded = true;
   });
 
-  saveOnEnter = dropTask(this, async (event) => {
+  saveOnEnter = dropTask(async (event) => {
     const keyCode = event.keyCode;
     if (13 === keyCode) {
       await this.saveOffering.perform();
     }
   });
 
-  saveOffering = dropTask(this, async () => {
+  saveOffering = dropTask(async () => {
     this.addErrorDisplaysFor([
       'room',
       'url',
@@ -525,7 +525,7 @@ export default class OfferingForm extends Component {
     return smallGroupOfferings;
   }
 
-  updateDurationHours = restartableTask(this, async (hours) => {
+  updateDurationHours = restartableTask(async (hours) => {
     await timeout(DEBOUNCE_DELAY);
     this.addErrorDisplayFor('durationHours');
     this.addErrorDisplayFor('durationMinutes');
@@ -537,7 +537,7 @@ export default class OfferingForm extends Component {
       .toDate();
   });
 
-  updateDurationMinutes = restartableTask(this, async (minutes) => {
+  updateDurationMinutes = restartableTask(async (minutes) => {
     await timeout(DEBOUNCE_DELAY);
     this.addErrorDisplayFor('durationHours');
     this.addErrorDisplayFor('durationMinutes');

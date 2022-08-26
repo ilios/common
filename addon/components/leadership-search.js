@@ -16,7 +16,7 @@ export default class LeadershipSearchComponent extends Component {
     return this.args.existingUsers.mapBy('id');
   }
 
-  searchForUsers = restartableTask(this, async (query) => {
+  searchForUsers = restartableTask(async (query) => {
     this.searchValue = query;
 
     const q = cleanQuery(query);
@@ -68,7 +68,7 @@ export default class LeadershipSearchComponent extends Component {
     return results;
   });
 
-  clickUser = dropTask(this, async (user) => {
+  clickUser = dropTask(async (user) => {
     if (this.existingUserIds.includes(user.id)) {
       return;
     }

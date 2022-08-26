@@ -9,7 +9,7 @@ export default class SessionOfferingsListComponent extends Component {
   @service store;
   @tracked offeringsRelationship;
 
-  load = restartableTask(this, async () => {
+  load = restartableTask(async () => {
     this.offeringsRelationship = await this.args.session.offerings;
   });
 

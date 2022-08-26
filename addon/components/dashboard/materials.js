@@ -157,7 +157,7 @@ export default class DashboardMaterialsComponent extends Component {
     this.args.setCourseIdFilter(event.target.value);
   }
 
-  setQuery = restartableTask(this, async (query) => {
+  setQuery = restartableTask(async (query) => {
     await timeout(DEBOUNCE_DELAY);
     this.args.setOffset(0);
     this.args.setFilter(query);

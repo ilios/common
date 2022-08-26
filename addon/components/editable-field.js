@@ -15,7 +15,7 @@ export default class EditableFieldComponent extends Component {
     return strippedText.length === 0;
   }
 
-  saveData = dropTask(this, async () => {
+  saveData = dropTask(async () => {
     await timeout(1);
     const result = await this.args.save();
     if (result !== false) {
@@ -23,7 +23,7 @@ export default class EditableFieldComponent extends Component {
     }
   });
 
-  closeEditor = dropTask(this, async () => {
+  closeEditor = dropTask(async () => {
     await timeout(1);
     await this.args.close();
     this.setIsEditing(false);

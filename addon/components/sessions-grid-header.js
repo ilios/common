@@ -19,7 +19,7 @@ export default class SessionsGridHeader extends Component {
     this.args.setSortBy(what);
   }
 
-  expandAll = dropTask(this, async () => {
+  expandAll = dropTask(async () => {
     this.isExpanding = true;
     await timeout(100);
     this.args.toggleExpandAll();

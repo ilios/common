@@ -67,23 +67,23 @@ export default class CourseSessionsComponent extends Component {
     return this.filterByLocalCache;
   }
 
-  saveSession = task(this, async (session) => {
+  saveSession = task(async (session) => {
     session.set('course', this.args.course);
 
     return await session.save();
   });
 
-  expandSession = task(this, async (session) => {
+  expandSession = task(async (session) => {
     await timeout(1);
     this.expandedSessionIds = [...this.expandedSessionIds, session.id];
   });
 
-  closeSession = task(this, async (session) => {
+  closeSession = task(async (session) => {
     await timeout(1);
     this.expandedSessionIds = this.expandedSessionIds.filter((id) => id !== session.id);
   });
 
-  changeFilterBy = restartableTask(this, async (event) => {
+  changeFilterBy = restartableTask(async (event) => {
     const value = event.target.value;
     this.filterByLocalCache = value;
     await timeout(DEBOUNCE_DELAY);

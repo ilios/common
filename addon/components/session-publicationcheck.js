@@ -20,7 +20,7 @@ export default class SessionPublicationCheckComponent extends Component {
     });
   }
 
-  load = restartableTask(this, async () => {
+  load = restartableTask(async () => {
     this.objectivesRelationship = await this.args.session.sessionObjectives;
   });
 

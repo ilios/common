@@ -24,11 +24,11 @@ export default class CourseObjectivesComponent extends Component {
     return this.objectivesRelationship ? this.objectivesRelationship.length : 0;
   }
 
-  load = restartableTask(this, async () => {
+  load = restartableTask(async () => {
     this.objectivesRelationship = await this.args.course.courseObjectives;
   });
 
-  saveNewObjective = dropTask(this, async (title) => {
+  saveNewObjective = dropTask(async (title) => {
     const newCourseObjective = this.store.createRecord('course-objective');
     let position = 0;
     const courseObjectives = await this.args.course.courseObjectives;

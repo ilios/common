@@ -8,7 +8,7 @@ import { validatable, Length, HtmlNotBlank } from 'ilios-common/decorators/valid
 export default class NewObjectiveComponent extends Component {
   @HtmlNotBlank() @Length(3, 65000) @tracked title;
 
-  saveObjective = dropTask(this, async () => {
+  saveObjective = dropTask(async () => {
     this.addErrorDisplayFor('title');
     const isValid = await this.isValid();
     if (!isValid) {

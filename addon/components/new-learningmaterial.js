@@ -90,7 +90,7 @@ export default class NewLearningmaterialComponent extends Component {
     return this.link ?? DEFAULT_URL_VALUE;
   }
 
-  prepareSave = dropTask(this, async () => {
+  prepareSave = dropTask(async () => {
     this.addErrorDisplayForAllFields();
     const isValid = await this.isValid();
     if (!isValid) {

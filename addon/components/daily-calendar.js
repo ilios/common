@@ -8,7 +8,7 @@ export default class DailyCalendarComponent extends Component {
   @service intl;
   @service moment;
 
-  scrollView = restartableTask(this, async (calendarElement, [earliestHour]) => {
+  scrollView = restartableTask(async (calendarElement, [earliestHour]) => {
     //waiting ensures that setHour has time to setup hour elements
     await timeout(1);
     // all of the hour elements are registered in the template as hour0, hour1, etc

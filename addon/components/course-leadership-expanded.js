@@ -34,7 +34,7 @@ export default class CourseLeadershipExpandedComponent extends Component {
     this.studentAdvisors = this.studentAdvisors.filter((obj) => obj !== user);
   }
 
-  manage = dropTask(this, async () => {
+  manage = dropTask(async () => {
     const obj = await hash({
       administrators: this.args.course.administrators,
       directors: this.args.course.directors,
@@ -46,7 +46,7 @@ export default class CourseLeadershipExpandedComponent extends Component {
     this.args.setIsManaging(true);
   });
 
-  save = dropTask(this, async () => {
+  save = dropTask(async () => {
     await timeout(10);
     this.args.course.setProperties({
       directors: this.directors,

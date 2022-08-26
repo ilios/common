@@ -8,7 +8,7 @@ export default class CourseVisualizeInstructorsComponent extends Component {
   @tracked academicYearCrossesCalendarYearBoundaries = false;
   @tracked name;
 
-  load = restartableTask(this, async () => {
+  load = restartableTask(async () => {
     this.academicYearCrossesCalendarYearBoundaries = await this.iliosConfig.itemFromConfig(
       'academicYearCrossesCalendarYearBoundaries'
     );

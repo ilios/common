@@ -22,7 +22,7 @@ export default class SessionsGridOffering extends Component {
     scrollIntoView(this.row);
   }
 
-  changeRoom = dropTask(this, async () => {
+  changeRoom = dropTask(async () => {
     await timeout(10);
     this.addErrorDisplayFor('room');
     const isValid = await this.isValid('room');
@@ -61,7 +61,7 @@ export default class SessionsGridOffering extends Component {
     }
   );
 
-  updateUi = restartableTask(this, async () => {
+  updateUi = restartableTask(async () => {
     await timeout(10);
     this.wasUpdated = true;
     scrollIntoView(this.element);

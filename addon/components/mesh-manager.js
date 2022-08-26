@@ -71,7 +71,7 @@ export default class MeshManagerComponent extends Component {
     this?.searchInput.focus();
   }
 
-  search = restartableTask(this, async () => {
+  search = restartableTask(async () => {
     if (this.query.length < MIN_INPUT) {
       this.searchResults = [];
       return; // don't linger around return right away
@@ -92,7 +92,7 @@ export default class MeshManagerComponent extends Component {
     this.searchResults = descriptors;
   });
 
-  searchMore = dropTask(this, async () => {
+  searchMore = dropTask(async () => {
     const descriptors = (
       await this.store.query('mesh-descriptor', {
         q: this.query,

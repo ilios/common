@@ -17,13 +17,13 @@ export default class DetailInstructorsComponent extends Component {
     this.load.perform();
   }
 
-  load = restartableTask(this, async () => {
+  load = restartableTask(async () => {
     const user = await this.currentUser.getModel();
     const school = await user.school;
     this.availableInstructorGroups = await school.instructorGroups;
   });
 
-  manage = dropTask(this, async () => {
+  manage = dropTask(async () => {
     const { ilmSession } = this.args;
     const { instructorGroups, instructors } = await hash({
       instructorGroups: ilmSession.instructorGroups,
@@ -35,7 +35,7 @@ export default class DetailInstructorsComponent extends Component {
     this.isManaging = true;
   });
 
-  save = dropTask(this, async () => {
+  save = dropTask(async () => {
     const { ilmSession } = this.args;
     ilmSession.set('instructorGroups', this.instructorGroupBuffer);
     ilmSession.set('instructors', this.instructorBuffer);

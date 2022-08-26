@@ -80,7 +80,7 @@ export default class HtmlEditorComponent extends Component {
     });
   }
 
-  loadEditor = restartableTask(this, async (element, [options]) => {
+  loadEditor = restartableTask(async (element, [options]) => {
     if (!this.editor) {
       this.editor = await this.createEditor(element, options);
       this.editor.html.set(this.args.content);

@@ -56,7 +56,7 @@ export default class CourseObjectiveListComponent extends Component {
     return this.args.course.hasMany('courseObjectives').ids().length;
   }
 
-  load = restartableTask(this, async () => {
+  load = restartableTask(async () => {
     //pre-load all session data as well to get access to child objectives
     await this.dataLoader.loadCourseSessions(this.args.course.id);
   });

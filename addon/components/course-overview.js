@@ -25,7 +25,7 @@ export default class CourseOverview extends Component {
   @tracked canCreateCourseInSchool = false;
   @tracked school = null;
 
-  load = restartableTask(this, async () => {
+  load = restartableTask(async () => {
     this.clerkshipTypeOptions = await this.store.peekAll('course-clerkship-type');
     this.externalId = this.args.course.externalId;
     this.startDate = this.args.course.startDate;
@@ -75,7 +75,7 @@ export default class CourseOverview extends Component {
     this.clerkshipTypeId = id;
   }
 
-  revertClerkshipTypeChanges = restartableTask(this, async () => {
+  revertClerkshipTypeChanges = restartableTask(async () => {
     const clerkshipType = await this.args.course.clerkshipType;
     if (clerkshipType) {
       this.clerkshipTypeId = clerkshipType.id;
@@ -84,7 +84,7 @@ export default class CourseOverview extends Component {
     }
   });
 
-  changeStartDate = restartableTask(this, async () => {
+  changeStartDate = restartableTask(async () => {
     this.addErrorDisplayFor('startDate');
     const isValid = await this.isValid('startDate');
     if (!isValid) {
@@ -101,7 +101,7 @@ export default class CourseOverview extends Component {
     this.startDate = this.args.course.startDate;
   }
 
-  changeEndDate = restartableTask(this, async () => {
+  changeEndDate = restartableTask(async () => {
     this.addErrorDisplayFor('endDate');
     const isValid = await this.isValid('endDate');
     if (!isValid) {
@@ -118,7 +118,7 @@ export default class CourseOverview extends Component {
     this.endDate = this.args.course.endDate;
   }
 
-  changeExternalId = restartableTask(this, async () => {
+  changeExternalId = restartableTask(async () => {
     this.addErrorDisplayFor('externalId');
     const isValid = await this.isValid('externalId');
     if (!isValid) {

@@ -108,12 +108,12 @@ export default class CourseMaterialsComponent extends Component {
     this.args.onSessionSort(prop);
   }
 
-  setCourseQuery = restartableTask(this, async (q) => {
+  setCourseQuery = restartableTask(async (q) => {
     await timeout(DEBOUNCE_DELAY);
     this.courseQuery = q;
   });
 
-  setSessionQuery = restartableTask(this, async (q) => {
+  setSessionQuery = restartableTask(async (q) => {
     await timeout(DEBOUNCE_DELAY);
     this.sessionQuery = q;
   });

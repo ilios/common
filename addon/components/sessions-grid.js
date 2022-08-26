@@ -80,7 +80,7 @@ export default class SessionsGrid extends Component {
     }
   }
 
-  removeSession = dropTask(this, async (session) => {
+  removeSession = dropTask(async (session) => {
     session.deleteRecord();
     await session.save();
   });

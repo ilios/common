@@ -10,7 +10,7 @@ export default class CourseSummaryHeaderComponent extends Component {
 
   @tracked canRollover;
 
-  load = restartableTask(this, async () => {
+  load = restartableTask(async () => {
     const school = await this.args.course.school;
     this.canRollover = await this.permissionChecker.canCreateCourse(school);
   });

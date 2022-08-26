@@ -51,7 +51,7 @@ export default class DashboardCalendarComponent extends Component {
     this.setup.perform();
   }
 
-  setup = dropTask(this, async () => {
+  setup = dropTask(async () => {
     const user = await this.currentUser.getModel();
     this.usersPrimarySchool = await user.school;
 
@@ -62,7 +62,7 @@ export default class DashboardCalendarComponent extends Component {
     this.absoluteIcsUri = server + '/ics/' + icsFeedKey;
   });
 
-  load = restartableTask(this, async (event, [school]) => {
+  load = restartableTask(async (event, [school]) => {
     if (!school) {
       return;
     }
@@ -81,7 +81,7 @@ export default class DashboardCalendarComponent extends Component {
     this.vocabularies = results.vocabularies;
   });
 
-  loadEvents = restartableTask(this, async (event, [school, fromTimeStamp, toTimeStamp]) => {
+  loadEvents = restartableTask(async (event, [school, fromTimeStamp, toTimeStamp]) => {
     if (!school || !fromTimeStamp || !toTimeStamp) {
       return;
     }

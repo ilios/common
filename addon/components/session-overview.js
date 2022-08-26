@@ -45,7 +45,7 @@ export default class SessionOverview extends Component {
     return this.filteredSessionTypes.sortBy('title');
   }
 
-  load = restartableTask(this, async (element, [session, sessionTypes]) => {
+  load = restartableTask(async (element, [session, sessionTypes]) => {
     const course = await session.course;
     const school = await course.school;
     const {
@@ -123,7 +123,7 @@ export default class SessionOverview extends Component {
     return false;
   }
 
-  saveIndependentLearning = dropTask(this, async (value) => {
+  saveIndependentLearning = dropTask(async (value) => {
     this.isIndependentLearning = value;
     if (!value) {
       const ilmSession = await this.args.session.ilmSession;
@@ -231,7 +231,7 @@ export default class SessionOverview extends Component {
     }
   }
 
-  saveDescription = task(this, async () => {
+  saveDescription = task(async () => {
     this.addErrorDisplayFor('description');
     const isValid = await this.isValid('description');
 
@@ -276,7 +276,7 @@ export default class SessionOverview extends Component {
     this.instructionalNotes = html;
   }
 
-  saveInstructionalNotes = task(this, async () => {
+  saveInstructionalNotes = task(async () => {
     this.addErrorDisplayFor('instructionalNotes');
     const isValid = await this.isValid('instructionalNotes');
     if (!isValid) {

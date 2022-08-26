@@ -17,14 +17,14 @@ export default class DetailTaxonomiesComponent extends Component {
     return !this.isManaging && terms.length;
   }
 
-  manage = dropTask(this, async () => {
+  manage = dropTask(async () => {
     this.args.expand();
     const terms = await this.args.subject.terms;
     this.bufferedTerms = [...terms.toArray()];
     this.isManaging = true;
   });
 
-  save = dropTask(this, async () => {
+  save = dropTask(async () => {
     this.args.subject.set('terms', this.bufferedTerms);
     await this.args.subject.save();
     this.isManaging = false;

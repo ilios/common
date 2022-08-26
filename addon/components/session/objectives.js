@@ -24,11 +24,11 @@ export default class SessionObjectivesComponent extends Component {
     return this.objectivesRelationship ? this.objectivesRelationship.length : 0;
   }
 
-  load = restartableTask(this, async () => {
+  load = restartableTask(async () => {
     this.objectivesRelationship = await this.args.session.sessionObjectives;
   });
 
-  saveNewObjective = dropTask(this, async (title) => {
+  saveNewObjective = dropTask(async (title) => {
     const newSessionObjective = this.store.createRecord('session-objective');
     let position = 0;
     const sessionObjectives = await this.args.session.sessionObjectives;

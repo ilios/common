@@ -30,7 +30,7 @@ export default class SessionObjectiveListItemComponent extends Component {
     return this.isManagingParents || this.isManagingDescriptors || this.isManagingTerms;
   }
 
-  saveTitleChanges = dropTask(this, async () => {
+  saveTitleChanges = dropTask(async () => {
     this.addErrorDisplayFor('title');
     const isValid = await this.isValid('title');
     if (!isValid) {
@@ -41,30 +41,30 @@ export default class SessionObjectiveListItemComponent extends Component {
     await this.args.sessionObjective.save();
   });
 
-  manageParents = dropTask(this, async () => {
+  manageParents = dropTask(async () => {
     const parents = await this.args.sessionObjective.courseObjectives;
     this.parentsBuffer = parents.toArray();
     this.isManagingParents = true;
   });
 
-  manageDescriptors = dropTask(this, async () => {
+  manageDescriptors = dropTask(async () => {
     const meshDescriptors = await this.args.sessionObjective.meshDescriptors;
     this.descriptorsBuffer = meshDescriptors.toArray();
     this.isManagingDescriptors = true;
   });
 
-  manageTerms = dropTask(this, async (vocabulary) => {
+  manageTerms = dropTask(async (vocabulary) => {
     this.selectedVocabulary = vocabulary;
     const terms = await this.args.sessionObjective.terms;
     this.termsBuffer = terms.toArray();
     this.isManagingTerms = true;
   });
 
-  highlightSave = restartableTask(this, async () => {
+  highlightSave = restartableTask(async () => {
     await timeout(1000);
   });
 
-  saveParents = dropTask(this, async () => {
+  saveParents = dropTask(async () => {
     const newParents = this.parentsBuffer.map((obj) => {
       return this.store.peekRecord('course-objective', obj.id);
     });
@@ -75,7 +75,7 @@ export default class SessionObjectiveListItemComponent extends Component {
     this.highlightSave.perform();
   });
 
-  saveDescriptors = dropTask(this, async () => {
+  saveDescriptors = dropTask(async () => {
     this.args.sessionObjective.set('meshDescriptors', this.descriptorsBuffer);
     await this.args.sessionObjective.save();
     this.descriptorsBuffer = [];
@@ -83,7 +83,7 @@ export default class SessionObjectiveListItemComponent extends Component {
     this.highlightSave.perform();
   });
 
-  saveTerms = dropTask(this, async () => {
+  saveTerms = dropTask(async () => {
     this.args.sessionObjective.set('terms', this.termsBuffer);
     await this.args.sessionObjective.save();
     this.termsBuffer = [];
@@ -136,7 +136,7 @@ export default class SessionObjectiveListItemComponent extends Component {
     this.selectedVocabulary = null;
   }
 
-  deleteObjective = dropTask(this, async () => {
+  deleteObjective = dropTask(async () => {
     await this.args.sessionObjective.destroyRecord();
   });
 }

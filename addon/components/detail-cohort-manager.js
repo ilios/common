@@ -12,7 +12,7 @@ export default class DetailCohortManagerComponent extends Component {
   @tracked filter = '';
   @tracked availableCohortProxies = null;
 
-  load = restartableTask(this, async (event, [school]) => {
+  load = restartableTask(async (event, [school]) => {
     if (!school) {
       return false;
     }

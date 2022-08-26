@@ -117,7 +117,7 @@ export default class VisualizerCourseObjectives extends Component {
     });
   }
 
-  donutHover = restartableTask(this, async (obj) => {
+  donutHover = restartableTask(async (obj) => {
     await timeout(100);
     if (this.args.isIcon || !obj || obj.empty) {
       this.tooltipTitle = null;

@@ -124,7 +124,7 @@ export default class LearningMaterialManagerComponent extends Component {
     return this.args.learningMaterialStatuses.findBy('id', this.statusId);
   }
 
-  load = restartableTask(this, async (element, [learningMaterial, parentMaterial]) => {
+  load = restartableTask(async (element, [learningMaterial, parentMaterial]) => {
     if (!learningMaterial || !parentMaterial) {
       return;
     }
@@ -158,7 +158,7 @@ export default class LearningMaterialManagerComponent extends Component {
     this.userRoleTitle = userRole.title;
   });
 
-  save = dropTask(this, async () => {
+  save = dropTask(async () => {
     this.addErrorDisplayForAllFields();
     const isTitleValid = await this.isValid('title');
     const isEndDateValid = this.startDate && this.endDate ? await this.isValid('endDate') : true;

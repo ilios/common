@@ -12,7 +12,7 @@ export default class LearningMaterialUploaderComponent extends Component {
   uploadQueueName = 'materials';
   @tracked fileUploadErrorMessage = false;
 
-  upload = dropTask(this, async (file) => {
+  upload = dropTask(async (file) => {
     this.args.setFilename(null);
     this.args.setFileHash(null);
     this.fileUploadErrorMessage = false;

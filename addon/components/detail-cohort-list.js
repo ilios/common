@@ -8,7 +8,7 @@ export default class DetailCohortListComponent extends Component {
   @service intl;
   @tracked sortedCohorts = null;
 
-  load = restartableTask(this, async (event, [cohorts]) => {
+  load = restartableTask(async (event, [cohorts]) => {
     if (!cohorts) {
       return false;
     }

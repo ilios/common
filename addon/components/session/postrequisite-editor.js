@@ -15,7 +15,7 @@ export default class SessionPostrequisiteEditorComponent extends Component {
     });
   }
 
-  setup = task(this, async () => {
+  setup = task(async () => {
     const { session } = this.args;
     const course = await session.course;
     const sessions = await course.sessions;
@@ -24,7 +24,7 @@ export default class SessionPostrequisiteEditorComponent extends Component {
       .filter((sessionInCourse) => sessionInCourse.id !== session.id);
   });
 
-  save = task(this, async () => {
+  save = task(async () => {
     this.args.session.set('postrequisite', this.selectedPostrequisite);
     await this.args.session.save();
     this.args.close();

@@ -39,7 +39,7 @@ export default class ObjectiveSortManagerComponent extends Component {
     }
   }
 
-  saveSortOrder = dropTask(this, async () => {
+  saveSortOrder = dropTask(async () => {
     const objectives = this.items;
     for (let i = 0, n = objectives.length; i < n; i++) {
       objectives[i].set('position', i + 1);

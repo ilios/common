@@ -32,7 +32,7 @@ export default class CourseRolloverComponent extends Component {
     }
   }
 
-  load = restartableTask(this, async (event, [course]) => {
+  load = restartableTask(async (event, [course]) => {
     if (!course) {
       return;
     }
@@ -62,7 +62,7 @@ export default class CourseRolloverComponent extends Component {
     this.selectedCohorts = this.selectedCohorts.filter((obj) => obj !== cohort);
   }
 
-  save = dropTask(this, async () => {
+  save = dropTask(async () => {
     await timeout(1);
     this.addErrorDisplayForAllFields();
     const isValid = await this.isValid();

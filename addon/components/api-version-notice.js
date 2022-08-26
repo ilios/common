@@ -15,7 +15,7 @@ export default class ApiVersionNoticeComponent extends Component {
     window.location.reload();
   }
 
-  check = dropTask(this, async () => {
+  check = dropTask(async () => {
     const mismatched = await this.apiVersion.getIsMismatched();
     if (mismatched && 'serviceWorker' in navigator) {
       await 2000; //wait to let the new service worker get fetched if it is available
@@ -36,7 +36,7 @@ export default class ApiVersionNoticeComponent extends Component {
     return true; //always return true to update data-test-load-finished property
   });
 
-  countdown = dropTask(this, async () => {
+  countdown = dropTask(async () => {
     this.updateAvailable = true;
     for (let i = 5; i > 0; i--) {
       this.countdownToUpdate = i;
@@ -45,7 +45,7 @@ export default class ApiVersionNoticeComponent extends Component {
     await this.update.perform();
   });
 
-  update = dropTask(this, async () => {
+  update = dropTask(async () => {
     if ('serviceWorker' in navigator) {
       const reg = await navigator.serviceWorker.getRegistration();
       if (reg && reg.waiting) {

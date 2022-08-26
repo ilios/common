@@ -34,7 +34,7 @@ export default class SessionOverviewIlmDuedateComponent extends Component {
     this.dueDate = dueDate.toDate();
   }
 
-  save = dropTask(this, async () => {
+  save = dropTask(async () => {
     this.addErrorDisplayFor('dueDate');
     const isValid = await this.isValid('dueDate');
     if (!isValid) {

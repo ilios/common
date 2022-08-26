@@ -6,7 +6,7 @@ import { all } from 'rsvp';
 export default class ObjectiveListItemTerms extends Component {
   @tracked sortedTerms;
 
-  load = dropTask(this, async (event, [filteredTerms]) => {
+  load = dropTask(async (event, [filteredTerms]) => {
     const proxies = await all(
       filteredTerms.map(async (term) => {
         const title = await term.getTitleWithParentTitles();

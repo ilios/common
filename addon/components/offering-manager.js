@@ -52,7 +52,7 @@ export default class OfferingManagerComponent extends Component {
     }
   }
 
-  textCopied = task(this, async () => {
+  textCopied = task(async () => {
     await timeout(3000);
   });
 

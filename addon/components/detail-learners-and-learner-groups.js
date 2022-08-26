@@ -11,7 +11,7 @@ export default class DetailLearnersAndLearnerGroupsComponent extends Component {
   @tracked learnerGroupBuffer = [];
   @tracked learnerBuffer = [];
 
-  manage = dropTask(this, async () => {
+  manage = dropTask(async () => {
     const { ilmSession } = this.args;
     const { learnerGroups, learners } = await hash({
       learnerGroups: ilmSession.learnerGroups,
@@ -23,7 +23,7 @@ export default class DetailLearnersAndLearnerGroupsComponent extends Component {
     this.isManaging = true;
   });
 
-  save = dropTask(this, async () => {
+  save = dropTask(async () => {
     const { ilmSession } = this.args;
     ilmSession.set('learnerGroups', this.learnerGroupBuffer);
     ilmSession.set('learners', this.learnerBuffer);

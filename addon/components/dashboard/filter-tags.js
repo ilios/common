@@ -19,7 +19,7 @@ export default class DashboardFilterTagsComponent extends Component {
     );
   }
 
-  load = restartableTask(this, async () => {
+  load = restartableTask(async () => {
     const tags = await all([
       this.getCourseLevelTags(),
       this.getSessionTypeTags(),
