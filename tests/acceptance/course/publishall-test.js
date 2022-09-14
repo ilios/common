@@ -16,7 +16,7 @@ module('Acceptance | Course - Publish All Sessions', function (hooks) {
   test('published sessions do not appear in the cannot publish list #1658', async function (assert) {
     const meshDescriptor = this.server.create('meshDescriptor');
     const term = this.server.create('term');
-
+    const learnerGroup = this.server.create('learnerGroup');
     const course = this.server.create('course', {
       year: 2013,
       school: this.school,
@@ -31,7 +31,10 @@ module('Acceptance | Course - Publish All Sessions', function (hooks) {
       terms: [term],
     });
     this.server.create('sessionObjective', { session: session1 });
-    this.server.create('offering', { sessionId: 1 });
+    this.server.create('offering', {
+      session: session1,
+      learnerGroups: [learnerGroup],
+    });
     const session2 = this.server.create('session', {
       course,
       published: true,
@@ -42,7 +45,10 @@ module('Acceptance | Course - Publish All Sessions', function (hooks) {
     this.server.create('sessionObjective', { session: session2 });
 
     this.server.create('offering', { session: session2 });
-    this.server.create('ilmSession', { session: session2 });
+    this.server.create('ilmSession', {
+      session: session2,
+      learnerGroups: [learnerGroup],
+    });
     const session3 = this.server.create('session', {
       course,
       published: true,
@@ -51,9 +57,10 @@ module('Acceptance | Course - Publish All Sessions', function (hooks) {
       terms: [term],
     });
     this.server.create('sessionObjective', { session: session3 });
-
-    this.server.create('offering', { session: session3 });
-
+    this.server.create('offering', {
+      session: session3,
+      learnerGroups: [learnerGroup],
+    });
     await page.visit({
       courseId: course.id,
     });

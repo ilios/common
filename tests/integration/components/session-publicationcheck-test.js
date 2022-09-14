@@ -49,4 +49,58 @@ module('Integration | Component | session-publicationcheck', function (hooks) {
     await render(hbs`<SessionPublicationcheck @session={{this.model}} />`);
     assert.notOk(component.unlink.isPresent);
   });
+
+  test('ilm without learner groups', async function (assert) {
+    const school = this.server.create('school');
+    const course = this.server.create('course', { school });
+    const session = this.server.create('session', { course });
+    this.server.create('ilmSession', { session });
+    await setupAuthentication({ school, administeredSchools: [school] });
+    const sessionModel = await this.owner.lookup('service:store').findRecord('session', session.id);
+    this.set('model', sessionModel);
+    await render(hbs`<SessionPublicationcheck @session={{this.model}} />`);
+    assert.strictEqual(component.learnerGroups, 'No');
+  });
+
+  test('ilm with learner groups', async function (assert) {
+    const school = this.server.create('school');
+    const course = this.server.create('course', { school });
+    const session = this.server.create('session', { course });
+    const learnerGroups = this.server.createList('learnerGroup', 2);
+    this.server.create('ilmSession', { session, learnerGroups });
+    await setupAuthentication({ school, administeredSchools: [school] });
+    const sessionModel = await this.owner.lookup('service:store').findRecord('session', session.id);
+    this.set('model', sessionModel);
+    await render(hbs`<SessionPublicationcheck @session={{this.model}} />`);
+    assert.strictEqual(component.learnerGroups, 'Yes (2)');
+  });
+
+  test('offerings without learner groups', async function (assert) {
+    const school = this.server.create('school');
+    const course = this.server.create('course', { school });
+    const session = this.server.create('session', { course });
+    this.server.createList('offering', 3, { session });
+    await setupAuthentication({ school, administeredSchools: [school] });
+    const sessionModel = await this.owner.lookup('service:store').findRecord('session', session.id);
+    this.set('model', sessionModel);
+    await render(hbs`<SessionPublicationcheck @session={{this.model}} />`);
+    assert.strictEqual(component.learnerGroups, 'No');
+  });
+
+  test('offerings with learner groups', async function (assert) {
+    const school = this.server.create('school');
+    const course = this.server.create('course', { school });
+    const session = this.server.create('session', { course });
+    const learnerGroups = this.server.createList('learnerGroup', 3);
+    this.server.create('offering', { session, learnerGroups: [learnerGroups[0]] });
+    this.server.create('offering', {
+      session,
+      learnerGroups: [learnerGroups[1], learnerGroups[2]],
+    });
+    await setupAuthentication({ school, administeredSchools: [school] });
+    const sessionModel = await this.owner.lookup('service:store').findRecord('session', session.id);
+    this.set('model', sessionModel);
+    await render(hbs`<SessionPublicationcheck @session={{this.model}} />`);
+    assert.strictEqual(component.learnerGroups, 'Yes (3)');
+  });
 });

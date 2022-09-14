@@ -28,6 +28,7 @@ module('Integration | Component | publish all sessions', function (hooks) {
       meshDescriptors: [meshDescriptor],
       terms: [term],
     });
+    const learnerGroup = this.server.create('learnerGroup');
     const completeSession = this.server.create('session', {
       title: 'session 2',
       published: true,
@@ -51,7 +52,7 @@ module('Integration | Component | publish all sessions', function (hooks) {
       session: fullyPublishedByIncompleteSession,
     });
     this.server.create('offering', { session: publishableSession });
-    this.server.create('offering', { session: completeSession });
+    this.server.create('offering', { session: completeSession, learnerGroups: [learnerGroup] });
     this.server.create('offering', {
       session: fullyPublishedByIncompleteSession,
     });

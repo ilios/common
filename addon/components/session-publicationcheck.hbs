@@ -42,6 +42,9 @@
             <th>
               {{t "general.meshTerms"}}
             </th>
+            <th>
+              {{t "general.learnerGroups"}}
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -96,6 +99,27 @@
               <td class="no" data-test-mesh>
                 {{t "general.no"}}
               </td>
+            {{/if}}
+            {{#if @session.isIndependentLearning}}
+              {{#if @session.associatedIlmLearnerGroups.length}}
+                <td class="yes" data-test-learnergroups>
+                  {{t "general.yes"}} ({{@session.associatedIlmLearnerGroups.length}})
+                </td>
+              {{else}}
+                <td class="no" data-test-learnergroups>
+                  {{t "general.no"}}
+                </td>
+              {{/if}}
+            {{else}}
+              {{#if @session.associatedOfferingLearnerGroups.length}}
+                <td class="yes" data-test-learnergroups>
+                  {{t "general.yes"}} ({{@session.associatedOfferingLearnerGroups.length}})
+                </td>
+              {{else}}
+                <td class="no" data-test-learnergroups>
+                  {{t "general.no"}}
+                </td>
+              {{/if}}
             {{/if}}
           </tr>
         </tbody>

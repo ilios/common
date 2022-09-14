@@ -10,6 +10,7 @@ const definition = {
   offerings: text('[data-test-offerings]'),
   terms: text('[data-test-terms]'),
   objectives: text('[data-test-objectives]'),
+  learnerGroups: text('[data-test-learnergroups]'),
   unlink: {
     scope: '[data-test-unlink]',
   },

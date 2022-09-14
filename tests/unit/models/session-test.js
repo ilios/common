@@ -26,16 +26,44 @@ module('Unit | Model | Session', function (hooks) {
     assert.strictEqual(model.get('requiredPublicationIssues').length, 1);
   });
 
-  test('check optional publication items', function (assert) {
+  test('check optional publication items', async function (assert) {
     const store = this.owner.lookup('service:store');
     const model = store.createRecord('session');
-    assert.strictEqual(model.optionalPublicationIssues.length, 3);
+    assert.strictEqual(model.optionalPublicationIssues.length, 4);
     assert.deepEqual(model.optionalPublicationIssues, [
       'terms',
+      'learnerGroups',
       'sessionObjectives',
       'meshDescriptors',
     ]);
     model.get('terms').addObject(store.createRecord('term'));
+    assert.strictEqual(model.optionalPublicationIssues.length, 3);
+    assert.deepEqual(model.optionalPublicationIssues, [
+      'learnerGroups',
+      'sessionObjectives',
+      'meshDescriptors',
+    ]);
+    const learnerGroup = store.createRecord('learner-group');
+    const ilm = store.createRecord('ilm-session', {
+      learnerGroups: [learnerGroup],
+    });
+    const offering = store.createRecord('offering', {
+      learnerGroups: [learnerGroup],
+    });
+    model.set('ilmSession', ilm);
+    await waitForResource(model, '_ilmLearnerGroups');
+    assert.strictEqual(model.optionalPublicationIssues.length, 2);
+    assert.deepEqual(model.optionalPublicationIssues, ['sessionObjectives', 'meshDescriptors']);
+    model.set('ilmSession', null);
+    await waitForResource(model, '_ilmLearnerGroups');
+    assert.strictEqual(model.optionalPublicationIssues.length, 3);
+    assert.deepEqual(model.optionalPublicationIssues, [
+      'learnerGroups',
+      'sessionObjectives',
+      'meshDescriptors',
+    ]);
+    model.get('offerings').addObject(offering);
+    await waitForResource(model, 'offeringLearnerGroups');
     assert.strictEqual(model.optionalPublicationIssues.length, 2);
     assert.deepEqual(model.optionalPublicationIssues, ['sessionObjectives', 'meshDescriptors']);
     model.get('sessionObjectives').addObject(store.createRecord('session-objective'));

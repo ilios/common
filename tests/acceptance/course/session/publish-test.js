@@ -11,6 +11,7 @@ module('Acceptance | Session - Publish', function (hooks) {
   hooks.beforeEach(async function () {
     const school = this.server.create('school');
     await setupAuthentication({ school, administeredSchools: [school] });
+    const learnerGroup = this.server.create('learnerGroup');
     this.course = this.server.create('course', { school });
     this.server.create('sessionType');
     this.publishedSession = this.server.create('session', {
@@ -31,16 +32,19 @@ module('Acceptance | Session - Publish', function (hooks) {
     this.server.create('ilmSession', {
       session: this.ilmSession,
       dueDate: moment().format(),
+      learnerGroups: [learnerGroup],
     });
     this.server.create('offering', {
       session: this.publishedSession,
       startDate: moment().format(),
       endDate: moment().add('6 hours').format(),
+      learnerGroups: [learnerGroup],
     });
     this.server.create('offering', {
       session: this.scheduledSession,
       startDate: moment().format(),
       endDate: moment().add('6 hours').format(),
+      learnerGroups: [learnerGroup],
     });
     this.server.create('offering', {
       session: this.draftSession,
@@ -84,7 +88,7 @@ module('Acceptance | Session - Publish', function (hooks) {
     assert.strictEqual(page.details.overview.publicationMenu.buttons[0].text, 'Publish As-is');
     assert.strictEqual(
       page.details.overview.publicationMenu.buttons[1].text,
-      'Review 3 Missing Items'
+      'Review 4 Missing Items'
     );
     assert.strictEqual(page.details.overview.publicationMenu.buttons[2].text, 'Mark as Scheduled');
   });

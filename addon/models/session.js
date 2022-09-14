@@ -332,6 +332,16 @@ export default class SessionModel extends Model {
       issues.push('terms');
     }
 
+    if (this.isIndependentLearning) {
+      if (this.associatedIlmLearnerGroups.length === 0) {
+        issues.push('learnerGroups');
+      }
+    } else {
+      if (this.associatedOfferingLearnerGroups.length === 0) {
+        issues.push('learnerGroups');
+      }
+    }
+
     if (this.sessionObjectives.length === 0) {
       issues.push('sessionObjectives');
     }

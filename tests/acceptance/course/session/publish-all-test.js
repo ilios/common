@@ -24,13 +24,14 @@ module('Acceptance | Session - Publish All', function (hooks) {
   });
 
   test('publish publishable sessions', async function (assert) {
+    const learnerGroups = this.server.createList('learnerGroup', 2);
     this.server.create('session', {
       course: this.course,
       terms: [this.term],
       meshDescriptors: [this.meshDescriptor],
       sessionType: this.sessionTypes[0],
       sessionObjectives: [this.server.create('sessionObjective')],
-      offerings: this.server.createList('offering', 2),
+      offerings: this.server.createList('offering', 2, { learnerGroups }),
     });
     this.server.create('session', {
       course: this.course,
@@ -38,7 +39,7 @@ module('Acceptance | Session - Publish All', function (hooks) {
       meshDescriptors: [this.meshDescriptor],
       sessionType: this.sessionTypes[0],
       sessionObjectives: [this.server.create('sessionObjective')],
-      offerings: this.server.createList('offering', 2),
+      offerings: this.server.createList('offering', 2, { learnerGroups }),
     });
 
     await sessionsPage.visit({ courseId: this.course.id });
