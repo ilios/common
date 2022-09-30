@@ -489,10 +489,12 @@ module('Integration | Component | offering form', function (hooks) {
     await render(hbs`<OfferingForm @close={{(noop)}} />`);
     const timezoneService = this.owner.lookup('service:timezone');
     const currentTimezone = moment.tz.guess();
+    console.log(component.timezoneEditor.currentTimezone.text);
     assert.strictEqual(
       component.timezoneEditor.currentTimezone.text,
       timezoneService.formatTimezone(currentTimezone)
     );
+    assert.ok(false);
   });
 
   test('save date with new timezone', async function (assert) {
@@ -517,6 +519,7 @@ module('Integration | Component | offering form', function (hooks) {
     await render(
       hbs`<OfferingForm @offering={{this.offering}} @close={{(noop)}} @save={{this.save}} />`
     );
+    console.log(component.timezoneEditor.currentTimezone.text);
     assert.notEqual(newTimezone, currentTimezone);
     assert.notOk(component.timezoneEditor.picker.isPresent);
     await component.timezoneEditor.currentTimezone.edit();
@@ -524,11 +527,13 @@ module('Integration | Component | offering form', function (hooks) {
     assert.strictEqual(component.timezoneEditor.picker.value, currentTimezone);
     await component.timezoneEditor.picker.select(newTimezone);
     assert.notOk(component.timezoneEditor.picker.isPresent);
+    console.log(component.timezoneEditor.currentTimezone.text);
     assert.strictEqual(
       component.timezoneEditor.currentTimezone.text,
       timezoneService.formatTimezone(newTimezone)
     );
     await component.save();
+    assert.ok(false);
   });
 
   test('removes double https from start of URL when input', async function (assert) {
