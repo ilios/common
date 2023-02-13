@@ -8,8 +8,8 @@ export default class SessionIndexRoute extends Route {
 
   canUpdate = false;
 
-  async afterModel(session) {
-    this.canUpdate = await this.permissionChecker.canUpdateSession(session);
+  async afterModel(model) {
+    this.canUpdate = await this.permissionChecker.canUpdateSession(model.session);
   }
 
   beforeModel(transition) {
