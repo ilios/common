@@ -7,7 +7,7 @@ export default class CoursePublishallController extends Controller {
 
   @action
   returnToList() {
-    this.router.transitionTo('course.index', this.model, {
+    this.router.transitionTo('course.index', this.model.course, {
       queryParams: {
         details: null,
         courseLeadershipDetails: null,

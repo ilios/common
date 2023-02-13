@@ -1,10 +1,10 @@
 <section class="publishall">
-  <LinkTo @route="course" @model={{@model}} data-test-back-to-course>
-    {{t "general.backToTitle" title=@model.title}}
+  <LinkTo @route="course" @model={{@model.course}} data-test-back-to-course>
+    {{t "general.backToTitle" title=@model.course.title}}
   </LinkTo>
   <PublishAllSessions
-    @course={{@model}}
-    @sessions={{await @model.sessions}}
+    @course={{@model.course}}
+    @sessions={{@model.sessions}}
     @saved={{this.returnToList}}
   />
 </section>
