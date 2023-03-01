@@ -25,7 +25,7 @@ module('Integration | Component | course/rollover-date-picker', function (hooks)
 
   test('onChange callback is invoked', async function (assert) {
     assert.expect(1);
-    const date = DateTime.fromObject({ year: 2020, month: 5, day: 6, hour: 8 });
+    const date = DateTime.utc(2020, 5, 6, 8);
     const newDate = date.plus({ days: 7 });
     const course = this.server.create('course', {
       startDate: date.toJSDate(),

@@ -258,7 +258,7 @@ module('Integration | Component | course rollover', function (hooks) {
     const lastYear = DateTime.now().year - 1;
     // ensure that rollover date and course start date fall on the same day of the week.
     const courseStartDate = DateTime.fromISO(`${lastYear}-W20-1`);
-    const rolloverDate = courseStartDate.plus({ week: 1 });
+    const rolloverDate = courseStartDate.plus({ days: 7 });
 
     const school = this.server.create('school');
     const course = this.server.create('course', {
