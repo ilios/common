@@ -8,6 +8,7 @@ module.exports = function (environment /*, appConfig */) {
       sessionLinkingAdminUi: true,
     },
     apiVersion: API_VERSION,
+    showHistoryBackLink: false,
   };
 
   if ('development' === environment) {
