@@ -1,9 +1,8 @@
 import Controller from '@ember/controller';
-import { getOwner } from '@ember/application';
+import { getConfig } from '@embroider/macros';
 
 export default class EventsController extends Controller {
   get showBackLink() {
-    const appConfig = getOwner(this).resolveRegistration('config:environment');
-    return !!appConfig.showHistoryBackLink;
+    return !!getConfig('showHistoryBackLink');
   }
 }

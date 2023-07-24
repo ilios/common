@@ -1,7 +1,7 @@
 import Controller from '@ember/controller';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
-import { getOwner } from '@ember/application';
+import { getConfig } from '@embroider/macros';
 import moment from 'moment';
 
 export default class WeeklyeventsController extends Controller {
@@ -19,8 +19,7 @@ export default class WeeklyeventsController extends Controller {
   }
 
   get showBackLink() {
-    const appConfig = getOwner(this).resolveRegistration('config:environment');
-    return !!appConfig.showHistoryBackLink;
+    return !!getConfig('showHistoryBackLink');
   }
 
   @action
