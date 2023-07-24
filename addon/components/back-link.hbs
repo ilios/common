@@ -2,6 +2,7 @@
   title={{t "general.returnToPreviousPage"}}
   class="back-link"
   href="#"
+  data-test-back-link
   {{on "click" (prevent-default this.back)}}
 >
   <FaIcon @icon="angles-left" /> {{t "general.back"}}
