@@ -1,6 +1,7 @@
 import Controller from '@ember/controller';
 import { action } from '@ember/object';
 import { tracked } from '@glimmer/tracking';
+import { getOwner } from '@ember/application';
 import moment from 'moment';
 
 export default class WeeklyeventsController extends Controller {
@@ -15,6 +16,11 @@ export default class WeeklyeventsController extends Controller {
 
   get expandedWeeks() {
     return this.expandedString.split('-');
+  }
+
+  get showBackLink() {
+    const appConfig = getOwner(this).resolveRegistration('config:environment');
+    return !!appConfig.showHistoryBackLink;
   }
 
   @action
