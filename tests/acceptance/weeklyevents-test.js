@@ -11,10 +11,12 @@ module('Acceptance | weekly events', function (hooks) {
     this.user = await setupAuthentication({ school: this.school });
   });
 
-  test('it renders', async function (assert) {
+  test('back-to link is not showing', async function (assert) {
     await page.visit();
     assert.notOk(page.backLink.isVisible);
-    // @todo implement this further [ST 2023/07/24]
-    assert.ok(page.weeklyEvents.isVisible);
+    assert.strictEqual(
+      page.weeklyEvents.topNavigation.title,
+      new Date().getFullYear().toString(10)
+    );
   });
 });

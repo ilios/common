@@ -28,7 +28,6 @@ module('Acceptance | single event', function (hooks) {
     this.owner.register('service:user-events', UserEventsServiceMock);
     await page.visit({ slug: 'Uwhatever' });
     assert.notOk(page.backLink.isVisible);
-    // @todo implement this further [ST 2023/07/24]
     assert.strictEqual(page.event.summary.title.text, 'Lorem - Ipsum');
   });
 });
