@@ -44,6 +44,8 @@ jobs:
           cache: npm
       - name: Install Dependencies
         run: npm install --no-shrinkwrap
+        env:
+          ILIOS_FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.ILIOS_FONTAWESOME_NPM_AUTH_TOKEN }}
       - name: Run Tests
         run: npm run test:ember
 
