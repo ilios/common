@@ -256,8 +256,9 @@ module('Integration | Component | course rollover', function (hooks) {
     assert.expect(7);
     const lastYear = DateTime.now().year - 1;
     // ensure that rollover date and course start date fall on the same day of the week.
-    const courseStartDate = DateTime.fromISO(`${lastYear}-W20-1`);
-    const rolloverDate = courseStartDate.plus({ week: 1 });
+    const { year, month, day } = DateTime.fromISO(`${lastYear}-W20-1`);
+    const courseStartDate = DateTime.fromObject({ year, month, day, hour: 8 });
+    const rolloverDate = courseStartDate.plus({ hours: 168 });
 
     const school = this.server.create('school');
     const course = this.server.create('course', {
@@ -323,8 +324,9 @@ module('Integration | Component | course rollover', function (hooks) {
     assert.expect(4);
     const lastYear = DateTime.now().year - 1;
     // rollover date and course start date don't fall on the same day of the week.
-    const courseStartDate = DateTime.fromISO(`${lastYear}-W20-1`);
-    const rolloverDate = courseStartDate.plus({ week: 1 }).set({ weekday: 3 });
+    const { year, month, day } = DateTime.fromISO(`${lastYear}-W20-1`);
+    const courseStartDate = DateTime.fromObject({ year, month, day, hour: 8 });
+    const rolloverDate = courseStartDate.plus({ hours: 168 }).set({ weekday: 3 });
 
     const school = this.server.create('school');
     const course = this.server.create('course', {
