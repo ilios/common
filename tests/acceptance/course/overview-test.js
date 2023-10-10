@@ -171,13 +171,13 @@ module('Acceptance | Course - Overview', function (hooks) {
     this.user.update({ administeredSchools: [this.school] });
     const course = this.server.create('course', {
       year: 2013,
-      startDate: DateTime.local(2013, 3, 23, 8).toJSDate(),
-      endDate: DateTime.local(2015, 4, 22, 8).toJSDate(),
+      startDate: DateTime.fromObject({ year: 2013, month: 3, day: 23, hour: 8 }).toJSDate(),
+      endDate: DateTime.fromObject({ year: 2015, month: 4, day: 22, hour: 8 }).toJSDate(),
       school: this.school,
     });
     const courseModel = await this.owner.lookup('service:store').findRecord('course', course.id);
     await page.visit({ courseId: courseModel.id, details: true });
-    const newDate = DateTime.local(2014, 5, 23, 8).toJSDate();
+    const newDate = DateTime.fromObject({ year: 2014, month: 5, day: 23, hour: 8 }).toJSDate();
     assert.strictEqual(
       page.details.overview.startDate.text,
       'Start: ' + this.intl.formatDate(course.startDate),
@@ -221,14 +221,14 @@ module('Acceptance | Course - Overview', function (hooks) {
     this.user.update({ administeredSchools: [this.school] });
     const course = this.server.create('course', {
       year: 2013,
-      startDate: DateTime.local(2013, 3, 23, 8).toJSDate(),
-      endDate: DateTime.local(2015, 4, 22, 8).toJSDate(),
+      startDate: DateTime.fromObject({ year: 2013, month: 3, day: 23, hour: 8 }).toJSDate(),
+      endDate: DateTime.fromObject({ year: 2015, month: 4, day: 22, hour: 8 }).toJSDate(),
       school: this.school,
     });
     const courseModel = await this.owner.lookup('service:store').findRecord('course', course.id);
     await page.visit({ courseId: courseModel.id, details: true });
     const endDate = this.intl.formatDate(courseModel.endDate);
-    const newDate = DateTime.local(2016, 5, 22, 8).toJSDate();
+    const newDate = DateTime.fromObject({ year: 2016, month: 5, day: 22, hour: 8 }).toJSDate();
 
     assert.strictEqual(page.details.overview.endDate.text, `End: ${endDate}`);
     await page.details.overview.endDate.edit();
