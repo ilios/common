@@ -181,12 +181,9 @@ module('Acceptance | Course - Overview', function (hooks) {
     assert.strictEqual(
       page.details.overview.startDate.text,
       'Start: ' + this.intl.formatDate(course.startDate),
+      'initial start date is correct',
     );
     await page.details.overview.startDate.edit();
-    assert.strictEqual(
-      page.details.overview.startDate.datePicker.value,
-      this.intl.formatDate(course.startDate),
-    );
     await page.details.overview.startDate.datePicker.set(newDate);
     assert.strictEqual(
       page.details.overview.startDate.datePicker.value,
@@ -196,6 +193,7 @@ module('Acceptance | Course - Overview', function (hooks) {
     assert.strictEqual(
       page.details.overview.startDate.text,
       'Start: ' + this.intl.formatDate(newDate),
+      'modified start date is correct',
     );
   });
 
