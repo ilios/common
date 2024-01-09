@@ -188,6 +188,10 @@ module('Acceptance | Course - Overview', function (hooks) {
       this.intl.formatDate(course.startDate),
     );
     await page.details.overview.startDate.datePicker.set(newDate);
+    assert.strictEqual(
+      page.details.overview.startDate.datePicker.value,
+      this.intl.formatDate(newDate),
+    );
     await page.details.overview.startDate.save();
     assert.strictEqual(
       page.details.overview.startDate.text,
