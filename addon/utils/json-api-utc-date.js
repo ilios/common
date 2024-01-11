@@ -8,14 +8,16 @@ import { DateTime } from 'luxon';
  * on the server, we assume it's UTC. It isn't though, it's just a date.
  */
 
+const isoRegex = /(\d{4})-(\d{2})-(\d{2})/;
 /**
  * Serializing the date from user input which ember-data stores as an
  * ISO time back into the YYYY-MM-DD format our API expected
  */
 export function jsonApiUtcSerializeDate(obj, property) {
-  obj.data.attributes[property] = DateTime.fromISO(obj.data.attributes[property])
-    .toLocal()
-    .toFormat('yyyy-MM-dd');
+  const match = isoRegex.exec(obj.data.attributes[property]);
+  if (match) {
+    obj.data.attributes[property] = match[0];
+  }
 }
 
 /**
@@ -24,7 +26,10 @@ export function jsonApiUtcSerializeDate(obj, property) {
  * stamp that ember-data expects.
  */
 export function jsonApiUtcNormalizeDate(resourceHash, property) {
-  const { year, month, day } = DateTime.fromISO(resourceHash.attributes[property]).toUTC();
-  const date = DateTime.local(year, month, day);
-  resourceHash.attributes[property] = date.toISO();
+  const match = isoRegex.exec(resourceHash.attributes[property]);
+  if (match) {
+    const [, year, month, day] = match;
+    const date = DateTime.fromObject({ year, month, day });
+    resourceHash.attributes[property] = date.toISO();
+  }
 }
