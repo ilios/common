@@ -11,14 +11,16 @@ import { DateTime } from 'luxon';
 const isoRegex = /(\d{4})-(\d{2})-(\d{2})/;
 
 /**
- * Serializing the date from user input which ember-data stores as an
- * ISO time back into the YYYY-MM-DD format our API expected
+ * Take the date that ember-data sends as an ISO time and parse it with luxon.
+ * This allows us to extract the year-month-day as a local time. Ember data's iso time includes
+ * a time stamp, if we don't put this back into local time we'll be sending the wrong date
+ * when UTC is a different date then local time.
  */
 export function jsonApiUtcSerializeDate(obj, property) {
-  const match = isoRegex.exec(obj.data.attributes[property]);
-  if (match) {
-    obj.data.attributes[property] = match[0];
-  }
+  const { year, month, day } = DateTime.fromISO(obj.data.attributes[property]);
+  const paddedMonth = `${month}`.padStart(2, '0');
+  const paddedDay = `${day}`.padStart(2, '0');
+  obj.data.attributes[property] = `${year}-${paddedMonth}-${paddedDay}`;
 }
 
 /**
@@ -26,9 +28,8 @@ export function jsonApiUtcSerializeDate(obj, property) {
  * it isn't a real ISO date and isn't really in UTC and then converting that
  * into an ISO time stamp that ember-data expects in the users local time.
  *
- * This then displayes to the user as year/month/day in their local time. Which is incorect
- * if their local time isn't the same as the expected local time of the course, but that's the way
- * the data currently exists in the API.
+ * This then displayes to the user as year/month/day in their local time and when they change
+ * it we can do the same dance for serialization in reverse.
  */
 export function jsonApiUtcNormalizeDate(resourceHash, property) {
   const match = isoRegex.exec(resourceHash.attributes[property]);
