@@ -8,23 +8,32 @@ import { DateTime } from 'luxon';
  * on the server, we assume it's UTC. It isn't though, it's just a date.
  */
 
+const isoRegex = /(\d{4})-(\d{2})-(\d{2})/;
+
 /**
  * Serializing the date from user input which ember-data stores as an
  * ISO time back into the YYYY-MM-DD format our API expected
  */
 export function jsonApiUtcSerializeDate(obj, property) {
-  obj.data.attributes[property] = DateTime.fromISO(obj.data.attributes[property])
-    .toLocal()
-    .toFormat('yyyy-MM-dd');
+  const match = isoRegex.exec(obj.data.attributes[property]);
+  if (match) {
+    obj.data.attributes[property] = match[0];
+  }
 }
 
 /**
- * Normalizing the ISO date from the server, making it into local time because
- * it isn't a real ISO date and then converting that local time into an ISO time
- * stamp that ember-data expects.
+ * Normalizing the UTC ISO date from the server, pulling out the year/month/day because
+ * it isn't a real ISO date and isn't really in UTC and then converting that
+ * into an ISO time stamp that ember-data expects in the users local time.
+ *
+ * This then displayes to the user as year/month/day in their local time. Which is incorect
+ * if their local time isn't the same as the expected local time of the course, but that's the way
+ * the data currently exists in the API.
  */
 export function jsonApiUtcNormalizeDate(resourceHash, property) {
-  const { year, month, day } = DateTime.fromISO(resourceHash.attributes[property]).toUTC();
-  const date = DateTime.local(year, month, day);
-  resourceHash.attributes[property] = date.toISO();
+  const match = isoRegex.exec(resourceHash.attributes[property]);
+  if (match) {
+    const [, year, month, day] = match;
+    resourceHash.attributes[property] = DateTime.fromObject({ year, month, day }).toISO();
+  }
 }
