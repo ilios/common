@@ -7,27 +7,6 @@ import page from 'ilios-common/page-objects/course';
 import { DateTime } from 'luxon';
 import percySnapshot from '@percy/ember';
 
-const march23rd2013 = DateTime.fromObject({
-  year: 2013,
-  month: 3,
-  day: 23,
-  hour: 8,
-});
-
-const april22nd2015 = DateTime.fromObject({
-  year: 2015,
-  month: 4,
-  day: 22,
-  hour: 8,
-});
-
-const april22nd2013 = DateTime.fromObject({
-  year: 2013,
-  month: 4,
-  day: 22,
-  hour: 8,
-});
-
 module('Acceptance | Course - Overview', function (hooks) {
   setupApplicationTest(hooks);
   hooks.beforeEach(async function () {
@@ -192,24 +171,24 @@ module('Acceptance | Course - Overview', function (hooks) {
     this.user.update({ administeredSchools: [this.school] });
     const course = this.server.create('course', {
       year: 2013,
-      startDate: march23rd2013.toJSDate(),
-      endDate: april22nd2015.toJSDate(),
+      startDate: DateTime.local(2013, 3, 23).toJSDate(),
+      endDate: DateTime.local(2015, 4, 22).toJSDate(),
       school: this.school,
     });
     const courseModel = await this.owner.lookup('service:store').findRecord('course', course.id);
     await page.visit({ courseId: courseModel.id, details: true });
-    const newDate = march23rd2013.plus({ years: 1, months: 1 }).toJSDate();
+    const newDate = DateTime.fromJSDate(course.startDate).plus({ years: 1, months: 1 }).toJSDate();
     assert.strictEqual(
       page.details.overview.startDate.text,
       'Start: ' + this.intl.formatDate(course.startDate),
       'initial start date is correct',
     );
     await page.details.overview.startDate.edit();
-    await page.details.overview.startDate.datePicker.set(newDate);
     assert.strictEqual(
       page.details.overview.startDate.datePicker.value,
-      this.intl.formatDate(newDate),
+      this.intl.formatDate(course.startDate),
     );
+    await page.details.overview.startDate.datePicker.set(newDate);
     await page.details.overview.startDate.save();
     assert.strictEqual(
       page.details.overview.startDate.text,
@@ -222,14 +201,14 @@ module('Acceptance | Course - Overview', function (hooks) {
     this.user.update({ administeredSchools: [this.school] });
     const course = this.server.create('course', {
       year: 2013,
-      startDate: march23rd2013.toJSDate(),
-      endDate: april22nd2013.toJSDate(),
+      startDate: DateTime.local(2013, 3, 23).toJSDate(),
+      endDate: DateTime.local(2013, 4, 22).toJSDate(),
       school: this.school,
     });
     const courseModel = await this.owner.lookup('service:store').findRecord('course', course.id);
     await page.visit({ courseId: courseModel.id, details: true });
-    const startDate = this.intl.formatDate(march23rd2013.toJSDate());
-    const newDate = march23rd2013.plus({ years: 1 }).toJSDate();
+    const startDate = this.intl.formatDate(courseModel.startDate);
+    const newDate = DateTime.fromJSDate(courseModel.startDate).plus({ years: 1 }).toJSDate();
 
     assert.strictEqual(page.details.overview.startDate.text, `Start: ${startDate}`);
     assert.notOk(page.details.overview.startDate.hasError);
@@ -244,35 +223,43 @@ module('Acceptance | Course - Overview', function (hooks) {
     this.user.update({ administeredSchools: [this.school] });
     const course = this.server.create('course', {
       year: 2013,
-      startDate: march23rd2013.toJSDate(),
-      endDate: april22nd2015.toJSDate(),
+      startDate: DateTime.local(2013, 3, 23).toJSDate(),
+      endDate: DateTime.local(2015, 4, 22).toJSDate(),
       school: this.school,
     });
     const courseModel = await this.owner.lookup('service:store').findRecord('course', course.id);
     await page.visit({ courseId: courseModel.id, details: true });
-    const endDate = this.intl.formatDate(april22nd2015.toJSDate());
-    const newDate = march23rd2013.plus({ years: 1, months: 1 }).toJSDate();
+    const endDate = this.intl.formatDate(courseModel.endDate);
+    const newDate = DateTime.fromJSDate(course.endDate).plus({ years: 1, months: 1 }).toJSDate();
 
-    assert.strictEqual(page.details.overview.endDate.text, `End: ${endDate}`);
+    assert.strictEqual(
+      page.details.overview.endDate.text,
+      `End: ${endDate}`,
+      'initial end date is correct',
+    );
     await page.details.overview.endDate.edit();
     assert.strictEqual(page.details.overview.endDate.datePicker.value, endDate);
     await page.details.overview.endDate.datePicker.set(newDate);
     await page.details.overview.endDate.save();
-    assert.strictEqual(page.details.overview.endDate.text, 'End: ' + this.intl.formatDate(newDate));
+    assert.strictEqual(
+      page.details.overview.endDate.text,
+      'End: ' + this.intl.formatDate(newDate),
+      'modified end date is correct',
+    );
   });
 
   test('end date validation', async function (assert) {
     this.user.update({ administeredSchools: [this.school] });
     const course = this.server.create('course', {
       year: 2013,
-      startDate: march23rd2013.toJSDate(),
-      endDate: april22nd2013.toJSDate(),
+      startDate: DateTime.local(2013, 3, 23).toJSDate(),
+      endDate: DateTime.local(2013, 4, 22).toJSDate(),
       school: this.school,
     });
     const courseModel = await this.owner.lookup('service:store').findRecord('course', course.id);
     await page.visit({ courseId: courseModel.id, details: true });
-    const endDate = this.intl.formatDate(april22nd2013.toJSDate());
-    const newDate = april22nd2013.minus({ years: 1 }).toJSDate();
+    const endDate = this.intl.formatDate(courseModel.endDate);
+    const newDate = DateTime.fromJSDate(course.endDate).minus({ years: 1 }).toJSDate();
 
     assert.strictEqual(page.details.overview.endDate.text, 'End: ' + endDate);
     assert.notOk(page.details.overview.endDate.hasError);
