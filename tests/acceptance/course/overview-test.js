@@ -171,8 +171,8 @@ module('Acceptance | Course - Overview', function (hooks) {
     this.user.update({ administeredSchools: [this.school] });
     const course = this.server.create('course', {
       year: 2013,
-      startDate: DateTime.local(2013, 3, 23).toJSDate(),
-      endDate: DateTime.local(2015, 4, 22).toJSDate(),
+      startDate: DateTime.utc(2013, 3, 23).toJSDate(),
+      endDate: DateTime.utc(2015, 4, 22).toJSDate(),
       school: this.school,
     });
     const courseModel = await this.owner.lookup('service:store').findRecord('course', course.id);
@@ -199,8 +199,8 @@ module('Acceptance | Course - Overview', function (hooks) {
     this.user.update({ administeredSchools: [this.school] });
     const course = this.server.create('course', {
       year: 2013,
-      startDate: DateTime.local(2013, 3, 23).toJSDate(),
-      endDate: DateTime.local(2013, 4, 22).toJSDate(),
+      startDate: DateTime.utc(2013, 3, 23).toJSDate(),
+      endDate: DateTime.utc(2013, 4, 22).toJSDate(),
       school: this.school,
     });
     const courseModel = await this.owner.lookup('service:store').findRecord('course', course.id);
@@ -221,8 +221,8 @@ module('Acceptance | Course - Overview', function (hooks) {
     this.user.update({ administeredSchools: [this.school] });
     const course = this.server.create('course', {
       year: 2013,
-      startDate: DateTime.local(2013, 3, 23).toJSDate(),
-      endDate: DateTime.local(2015, 4, 22).toJSDate(),
+      startDate: DateTime.utc(2013, 3, 23).toJSDate(),
+      endDate: DateTime.utc(2015, 4, 22).toJSDate(),
       school: this.school,
     });
     const courseModel = await this.owner.lookup('service:store').findRecord('course', course.id);
@@ -242,8 +242,8 @@ module('Acceptance | Course - Overview', function (hooks) {
     this.user.update({ administeredSchools: [this.school] });
     const course = this.server.create('course', {
       year: 2013,
-      startDate: DateTime.local(2013, 3, 23).toJSDate(),
-      endDate: DateTime.local(2013, 4, 22).toJSDate(),
+      startDate: DateTime.utc(2013, 3, 23).toJSDate(),
+      endDate: DateTime.utc(2013, 4, 22).toJSDate(),
       school: this.school,
     });
     const courseModel = await this.owner.lookup('service:store').findRecord('course', course.id);
