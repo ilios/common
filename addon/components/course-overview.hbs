@@ -116,8 +116,6 @@
       <div class="block coursestartdate">
         <label>{{t "general.start"}}:</label>
         <span>
-          {{log "template-date" @course.startDate}}
-          {{log "template-format" (format-date @course.startDate)}}
           {{#if @editable}}
             <EditableField
               @value={{format-date @course.startDate}}
