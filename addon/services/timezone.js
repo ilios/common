@@ -1,5 +1,4 @@
 import Service from '@ember/service';
-import { DateTime } from 'luxon';
 import moment from 'moment';
 import { uniqueValues } from 'ilios-common/utils/array-helpers';
 
@@ -21,7 +20,8 @@ export default class TimezoneService extends Service {
    * @returns {string}
    */
   getCurrentTimezone() {
-    return DateTime.local().zoneName;
+    console.log('current timezone: ' + Intl.DateTimeFormat().resolvedOptions().timeZone);
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
   }
 
   /**

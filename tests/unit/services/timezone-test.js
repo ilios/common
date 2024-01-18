@@ -20,7 +20,6 @@ module('Unit | Service | timezone', function (hooks) {
   test('getTimezoneNames', function (assert) {
     const service = this.owner.lookup('service:timezone');
     const names = service.getTimezoneNames();
-    console.log(names);
     const currentTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     assert.ok(names.includes(currentTimezone));
     if (currentTimezone === 'UTC') {
