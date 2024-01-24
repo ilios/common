@@ -218,8 +218,8 @@ devDependencies:
     specifier: ~5.5.0
     version: 5.5.0
   ember-cli-browserstack:
-    specifier: ^2.0.1
-    version: 2.0.1
+    specifier: ^3.0.0
+    version: 3.0.0
   ember-cli-clean-css:
     specifier: ^3.0.0
     version: 3.0.0
@@ -6258,13 +6258,14 @@ packages:
       - supports-color
     dev: false
 
-  /ember-cli-browserstack@2.0.1:
-    resolution: {integrity: sha512-8Ki6570dTSpvYLdNZ7VvJm4Gku4ZNfF78/4BeOD2IqH/vGo80hwBNqDqRINcy8et562uEWe8gUGyeYBZ2ohhkw==}
-    engines: {node: 10.* || >= 12}
+  /ember-cli-browserstack@3.0.0:
+    resolution: {integrity: sha512-hh130Z3H4R90qGsoasOrcYigv6j0Mci0aYcXDeEO18hx5iBczW9MDYP0WPtLVe6fRe5Fr7dq8hlSsdpiFqaZjg==}
+    engines: {node: 14.* || 16.* || >= 18}
     hasBin: true
     dependencies:
       browserstack: 1.6.1
       browserstack-local: 1.5.5
+      debug: 4.3.4
       rsvp: 4.8.5
       yargs: 17.7.2
     transitivePeerDependencies:
