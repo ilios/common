@@ -27,16 +27,34 @@ jobs:
       run: |
         git config user.name Zorgbort
         git config user.email info@iliosproject.org
-    - name: Increment Version
+    - name: Get current versionn
       working-directory: ./packages/ilios-common
-      run: npx update-version --${{ github.event.inputs.releaseType }} 1
-    - run: |
-        NEW_TAG=`node -p "require('./packages/ilios-common/package.json').version"`
-        echo ${NEW_TAG}
-        echo "new_tag=${NEW_TAG}" >> $GITHUB_ENV
+      run: |
+        CURRENT_VERSION=`node -p "require('./packages/ilios-common/package.json').version"`
+        echo ${CURRENT_VERSION}
+        echo "current_version=${CURRENT_VERSION}" >> $GITHUB_ENV
+    - name: Create new version
+      run: |
+        NEW_VERSION=$(npx semver --increment ${{ github.event.inputs.releaseType }} ${{env.current_version}})
+        echo ${NEW_VERSION}
+        echo "new_version=${NEW_VERSION}" >> $GITHUB_ENV
+    - name: Extract version parts
+      run: |
+        MAJOR_VERSION=$(echo env.new_version | sed -rn 's#^refs/tags/(v3)\.([0-9]+)\.([0-9]+)$#\1#p')
+        echo ${MAJOR_VERSION}
+        echo "major_version=${MAJOR_VERSION}" >> $GITHUB_ENV
+        MINOR_VERSION=$(echo env.new_version | sed -rn 's#^refs/tags/(v3)\.([0-9]+)\.([0-9]+)$#\1.\2#p')
+        echo ${MINOR_VERSION}
+        echo "minor_version=${MINOR_VERSION}" >> $GITHUB_ENV
+        PATCH_VERSION=$(echo env.new_version | sed -rn 's#^refs/tags/(v3)\.([0-9]+)\.([0-9]+)$#\1.\2.\3#p')
+        echo ${PATCH_VERSION}
+        echo "patch_version=${PATCH_VERSION}" >> $GITHUB_ENV
+    - name: Set version
+      working-directory: ./packages/ilios-common
+      run: npx update-version --major ${{env.major_version}} --minor ${{env.minor_version}} --patch ${{env.patch_version}}
     - name: Tag Version
       run: |
-        git commit -a -m "${{env.new_tag}}"
-        git tag ${{env.new_tag}} -m "Tagging the ${{env.new_tag}} ${{ github.event.inputs.releaseType }} release"
+        git commit -a -m "${{env.new_version}}"
+        git tag ${{env.new_version}} -m "Tagging the ${{env.new_version}} ${{ github.event.inputs.releaseType }} release"
     - name: Push Changes
       run: git push --follow-tags
